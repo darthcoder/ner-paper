@@ -16,6 +16,16 @@ def clean(wikitext: str) -> str:
     ).strip()
 
 
+NON_ARTICLE_PREFIXES = (
+    "Category:",
+    "Template:",
+    "Wikipedia:",
+    "Help:",
+    "Portal:",
+    "File:",
+    "Talk:",
+)
+
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 skipped = 0
@@ -24,11 +34,15 @@ written = 0
 with IN.open() as fin, OUT.open("w") as fout:
     for line in fin:
         record = json.loads(line)
-        text = clean(record.get("wikitext", ""))
-        if not text:
+        title = record["title"]
+        if title.startswith(NON_ARTICLE_PREFIXES):
             skipped += 1
             continue
-        fout.write(json.dumps({"pageid": record["pageid"], "title": record["title"], "text": text}) + "\n")
+        text = clean(record.get("wikitext", ""))
+        if not text or len(text) < 100:
+            skipped += 1
+            continue
+        fout.write(json.dumps({"pageid": record["pageid"], "title": title, "text": text}) + "\n")
         written += 1
 
-print(f"Written {written} articles, skipped {skipped} empty.")
+print(f"Written {written} articles, skipped {skipped} non-articles/empty.")
