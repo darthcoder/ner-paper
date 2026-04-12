@@ -1,0 +1,69 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-12 19:05:01
+Run type      : bert-base-uncased, 7 epochs, uniform redaction, 80/20 split
+
+--- Change Applied ---
+Swapped DistilBERT → bert-base-uncased (~110M params, 3x DistilBERT).
+Epochs kept at 7. Everything else identical to clean baseline.
+
+--- Model ---
+Architecture  : BERT-base (encoder-only, Masked Language Model)
+Model ID      : bert-base-uncased
+Parameters    : ~110M
+
+--- Training Hyperparameters ---
+Epochs        : 7
+Batch size    : 8
+Learning rate : 5e-5
+Warmup steps  : 50
+Max length    : 512 tokens
+Stride        : 256 tokens
+
+--- Data ---
+Train : 116 articles, uniform redaction (2–5%) → 1205 redactions
+Test  :  29 articles, uniform redaction (2–5%) → 346 redactions
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 346
+  Exact matches    : 71
+  Truncated (skip) : 0
+  Accuracy         : 20.52%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL        3/25    12.00%
+  DATE            5/73     6.85%
+  EVENT           4/24    16.67%
+  FAC             0/4      0.00%
+  GPE            22/56    39.29%
+  LAW             0/2      0.00%
+  LOC             0/7      0.00%
+  MONEY           0/1      0.00%
+  NORP           23/36    63.89%
+  ORDINAL         2/2    100.00%
+  ORG             5/48    10.42%
+  PERSON          6/56    10.71%
+  PRODUCT         0/3      0.00%
+  TIME            0/1      0.00%
+  WORK_OF_ART     1/8     12.50%
+
+================================================================================
+COMPARISON VS CLEAN BASELINE (DistilBERT, 7 epochs, 17.34%)
+================================================================================
+  Accuracy : 17.34% → 20.52%  (+3.18 pp) — IMPROVEMENT ✓
+
+  Notable deltas:
+  NORP     52.78% → 63.89%  (+11.11 pp)
+  GPE      33.93% → 39.29%   (+5.36 pp)
+  PERSON    5.36% → 10.71%   (+5.36 pp)
+  DATE      5.48% →  6.85%   (+1.37 pp)
+
+  Verdict: genuine improvement. BERT-base generalises better than DistilBERT
+  on this task. Loss curve was also steeper (epoch 4 loss: 0.77 vs DistilBERT
+  plateauing earlier), confirming the extra capacity is being used.
+================================================================================

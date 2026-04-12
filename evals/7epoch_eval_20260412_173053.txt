@@ -1,0 +1,65 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-12 17:30:53
+Run type      : 7 epochs (up from 3), uniform redaction, 80/20 split
+
+--- Change Applied ---
+train.py: EPOCHS 3 → 7. Everything else identical to clean baseline.
+
+--- Model ---
+Architecture  : DistilBERT (encoder-only, Masked Language Model)
+Model ID      : distilbert-base-uncased
+Parameters    : ~66M
+
+--- Training Hyperparameters ---
+Epochs        : 7
+Batch size    : 8
+Learning rate : 5e-5
+Warmup steps  : 50
+Max length    : 512 tokens
+Stride        : 256 tokens
+
+--- Data ---
+Train : 116 articles, uniform redaction (2–5%) → 1205 redactions
+Test  :  29 articles, uniform redaction (2–5%) → 346 redactions
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 346
+  Exact matches    : 61
+  Truncated (skip) : 0
+  Accuracy         : 17.63%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL        3/25    12.00%
+  DATE            4/73     5.48%
+  EVENT           5/24    20.83%
+  FAC             0/4      0.00%
+  GPE            19/56    33.93%
+  LAW             0/2      0.00%
+  LOC             0/7      0.00%
+  MONEY           0/1      0.00%
+  NORP           19/36    52.78%
+  ORDINAL         2/2    100.00%
+  ORG             4/48     8.33%
+  PERSON          4/56     7.14%
+  PRODUCT         0/3      0.00%
+  TIME            0/1      0.00%
+  WORK_OF_ART     1/8     12.50%
+
+================================================================================
+COMPARISON VS CLEAN BASELINE (3 epochs, 17.34%)
+================================================================================
+  Accuracy : 17.34% → 17.63%  (+0.29 pp) — marginal improvement
+
+  Notable deltas:
+  EVENT   12.50% → 20.83%  (+8.33 pp)
+  ORG     12.50% →  8.33%  (-4.17 pp)
+  PERSON   5.36% →  7.14%  (+1.79 pp)
+
+  Verdict: within noise on 346 samples. More epochs alone not sufficient.
+================================================================================

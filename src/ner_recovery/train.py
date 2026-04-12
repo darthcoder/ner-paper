@@ -13,21 +13,21 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader, Dataset
 from transformers import (
-    DistilBertForMaskedLM,
-    DistilBertTokenizerFast,
+    BertForMaskedLM,
+    BertTokenizerFast,
     get_linear_schedule_with_warmup,
 )
 from torch.optim import AdamW
 from tqdm import tqdm
 
 
-MODEL_NAME = "distilbert-base-uncased"
+MODEL_NAME = "bert-base-uncased"
 DATA_PATH = Path("data/train_redacted.jsonl")
 OUTPUT_DIR = Path("models")
 MAX_LENGTH = 512
 STRIDE = 256
 BATCH_SIZE = 8
-EPOCHS = 3
+EPOCHS = 7
 LR = 5e-5
 WARMUP_STEPS = 50
 
@@ -161,8 +161,8 @@ def train(args: argparse.Namespace) -> None:
     device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
     print(f"Device: {device}")
 
-    tokenizer = DistilBertTokenizerFast.from_pretrained(MODEL_NAME)
-    model = DistilBertForMaskedLM.from_pretrained(MODEL_NAME)
+    tokenizer = BertTokenizerFast.from_pretrained(MODEL_NAME)
+    model = BertForMaskedLM.from_pretrained(MODEL_NAME)
     model.to(device)
 
     print("Building dataset...")

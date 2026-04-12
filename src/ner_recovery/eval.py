@@ -13,7 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import torch
-from transformers import DistilBertForMaskedLM, DistilBertTokenizerFast
+from transformers import BertForMaskedLM, BertTokenizerFast
 from tqdm import tqdm
 
 
@@ -31,8 +31,8 @@ def evaluate(args: argparse.Namespace) -> None:
     )
     print(f"Device: {device}")
 
-    tokenizer = DistilBertTokenizerFast.from_pretrained(args.model_dir)
-    model = DistilBertForMaskedLM.from_pretrained(args.model_dir)
+    tokenizer = BertTokenizerFast.from_pretrained(args.model_dir)
+    model = BertForMaskedLM.from_pretrained(args.model_dir)
     model.to(device)
     model.eval()
 
