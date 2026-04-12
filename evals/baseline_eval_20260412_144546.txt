@@ -1,0 +1,62 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-12 14:45:46
+Run type      : Baseline (no modifications)
+
+--- Model ---
+Architecture  : DistilBERT (encoder-only, Masked Language Model)
+Model ID      : distilbert-base-uncased
+Parameters    : ~66M
+
+--- Training Hyperparameters ---
+Epochs        : 3
+Batch size    : 8
+Learning rate : 5e-5
+Warmup steps  : 50
+Max length    : 512 tokens
+Stride        : 256 tokens (sliding window)
+Optimizer     : AdamW + linear schedule w/ warmup
+
+--- Data ---
+Corpus        : WWI Wikipedia articles (145 articles)
+Data file     : data/wwi_redacted.jsonl
+Redaction rate: 2–5% of entities per article (min 1), seed=42
+Model dir     : models/final
+
+--- Known Limitations at this baseline ---
+- eval.py replaces each [REDACTED] with a single [MASK] token regardless of
+  entity length. Multi-token entities (e.g. "Franz Ferdinand", "Western Front")
+  can never produce an exact match under this scheme. This is suspected to be
+  the primary cause of 0% on EVENT, FAC, MONEY, LAW, PERCENT, QUANTITY.
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 1465
+  Exact matches    : 556
+  Truncated (skip) : 0
+  Accuracy         : 37.95%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL       46/109   42.20%
+  DATE           65/233   27.90%
+  EVENT           0/96     0.00%
+  FAC             0/19     0.00%
+  GPE           172/245   70.20%
+  LANGUAGE        2/2    100.00%
+  LAW             0/4      0.00%
+  LOC            21/29    72.41%
+  MONEY           0/9      0.00%
+  NORP          154/188   81.91%
+  ORDINAL        21/22    95.45%
+  ORG            38/243   15.64%
+  PERCENT         0/3      0.00%
+  PERSON         32/220   14.55%
+  PRODUCT         3/9     33.33%
+  QUANTITY        0/16     0.00%
+  TIME            1/4     25.00%
+  WORK_OF_ART     1/14    7.14%
+================================================================================
