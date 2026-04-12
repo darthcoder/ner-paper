@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 
 MODEL_DIR = Path("models/final")
-DATA_PATH = Path("data/wwi_redacted.jsonl")
+DATA_PATH = Path("data/test_redacted.jsonl")
 MAX_LENGTH = 512
 STRIDE = 256
 

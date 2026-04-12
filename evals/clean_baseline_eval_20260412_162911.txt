@@ -1,0 +1,64 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-12 16:29:11
+Run type      : Clean baseline — 80/20 split, uniform redaction on both splits
+
+--- Setup ---
+- 116 train articles, uniform redaction (2–5%, seed=42) → 1205 redactions
+- 29 test articles,  uniform redaction (2–5%, seed=42) → 346 redactions
+- Model retrained from scratch on train split only
+- Evaluated on held-out test split only
+
+--- Model ---
+Architecture  : DistilBERT (encoder-only, Masked Language Model)
+Model ID      : distilbert-base-uncased
+Parameters    : ~66M
+
+--- Training Hyperparameters ---
+Epochs        : 3
+Batch size    : 8
+Learning rate : 5e-5
+Warmup steps  : 50
+Max length    : 512 tokens
+Stride        : 256 tokens
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 346
+  Exact matches    : 60
+  Truncated (skip) : 0
+  Accuracy         : 17.34%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL        3/25    12.00%
+  DATE            4/73     5.48%
+  EVENT           3/24    12.50%
+  FAC             0/4      0.00%
+  GPE            19/56    33.93%
+  LAW             0/2      0.00%
+  LOC             0/7      0.00%
+  MONEY           0/1      0.00%
+  NORP           19/36    52.78%
+  ORDINAL         2/2    100.00%
+  ORG             6/48    12.50%
+  PERSON          3/56     5.36%
+  PRODUCT         0/3      0.00%
+  TIME            0/1      0.00%
+  WORK_OF_ART     1/8     12.50%
+
+================================================================================
+NOTES
+================================================================================
+  This is the TRUE clean baseline — first eval with proper train/test separation.
+  All prior evals (including fix1's 67.17%) were train=eval and measured
+  memorisation, not generalisation.
+
+  The weighted redaction run (fix2b) scored 18.21% on the same test set —
+  marginally higher than this 17.34%, but noise-level difference on 346 samples.
+
+  This is the reference point for all future improvement attempts.
+================================================================================

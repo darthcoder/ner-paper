@@ -1,0 +1,65 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-12 16:03:28
+Run type      : Fix #2b — 80/20 train/test split + error-driven weighted train
+
+--- Changes Applied ---
+- scripts/splitter.py: splits wwi_clean.jsonl → 116 train / 29 test (seed=42)
+- Train redacted with weighted redactor (10–20%, error-driven weights)
+- Test redacted with uniform redactor (2–5%, seed=42)
+- train.py default → data/train_redacted.jsonl
+- eval.py default  → data/test_redacted.jsonl
+- Model retrained from scratch on train split only
+
+--- Model ---
+Architecture  : DistilBERT (encoder-only, Masked Language Model)
+Model ID      : distilbert-base-uncased
+Parameters    : ~66M
+
+--- Data ---
+Train articles : 116  →  4687 redactions (40.4 avg)
+Test articles  :  29  →   346 redactions (11.9 avg)
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 346
+  Exact matches    : 63
+  Truncated (skip) : 0
+  Accuracy         : 18.21%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL        5/25    20.00%
+  DATE            5/73     6.85%
+  EVENT           3/24    12.50%
+  FAC             0/4      0.00%
+  GPE            20/56    35.71%
+  LAW             0/2      0.00%
+  LOC             0/7      0.00%
+  MONEY           0/1      0.00%
+  NORP           17/36    47.22%
+  ORDINAL         2/2    100.00%
+  ORG             5/48    10.42%
+  PERSON          5/56     8.93%
+  PRODUCT         0/3      0.00%
+  TIME            0/1      0.00%
+  WORK_OF_ART     1/8     12.50%
+
+================================================================================
+ANALYSIS
+================================================================================
+  ⚠️  REGRESSION. Accuracy: 18.21% vs fix1's 67.17%.
+
+  IMPORTANT CAVEAT: this is the first eval on truly held-out data. fix1's
+  67.17% was train=eval on the same 145 articles — effectively measuring
+  memorization, not generalisation. 18.21% is the honest generalisation score.
+
+  The 80/20 split also reduced training data (116 vs 145 articles), which
+  hurts a model this small on a corpus this small.
+
+  Decision: ROLLBACK fix #2. Revert to fix1 model + original wwi_redacted.jsonl.
+  The train/test split methodology should be kept as the new standard.
+================================================================================

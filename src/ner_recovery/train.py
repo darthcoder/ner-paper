@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 
 MODEL_NAME = "distilbert-base-uncased"
-DATA_PATH = Path("data/wwi_redacted.jsonl")
+DATA_PATH = Path("data/train_redacted.jsonl")
 OUTPUT_DIR = Path("models")
 MAX_LENGTH = 512
 STRIDE = 256

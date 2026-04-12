@@ -1,0 +1,80 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-12 15:19:20
+Run type      : Fix #2 — error-driven type-weighted redaction + retrain
+
+--- Changes Applied ---
+scripts/redactor.py: Redaction sampling now weighted by inverse accuracy from
+fix1 eval. Rate increased from 2–5% to 10–20% of entities per article.
+Weights clipped to [0.05, 1.0]. Weak labels (MONEY, QUANTITY, PERCENT,
+WORK_OF_ART) get highest sampling probability.
+
+Result: 5645 total redactions vs 1465 in baseline (3.85x increase).
+Model retrained from scratch on new data (same hyperparameters).
+
+--- Model ---
+Architecture  : DistilBERT (encoder-only, Masked Language Model)
+Model ID      : distilbert-base-uncased
+Parameters    : ~66M
+
+--- Training Hyperparameters (unchanged) ---
+Epochs        : 3
+Batch size    : 8
+Learning rate : 5e-5
+Warmup steps  : 50
+Max length    : 512 tokens
+Stride        : 256 tokens (sliding window)
+Optimizer     : AdamW + linear schedule w/ warmup
+
+--- Data ---
+Corpus        : WWI Wikipedia articles (145 articles)
+Data file     : data/wwi_redacted.jsonl
+Redaction rate: 10–20% of entities per article (error-driven weights), seed=42
+Training examples: 1442 (vs ~400 previously — more redactions per window)
+Model dir     : models/final
+
+--- ⚠️ METHODOLOGICAL NOTE ---
+The eval data changed alongside training data (same wwi_redacted.jsonl used for
+both). The test set grew from 1465 → 5645 redactions with a different label
+distribution (more CARDINAL, DATE, PERSON, ORG — harder categories). Direct
+comparison to fix1 accuracy is not apples-to-apples.
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 5645
+  Exact matches    : 2217
+  Truncated (skip) : 0
+  Accuracy         : 39.27%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL      207/719   28.79%
+  DATE          412/1197  34.42%
+  EVENT         178/372   47.85%
+  FAC            33/102   32.35%
+  GPE           177/239   74.06%
+  LAW             2/10    20.00%
+  LOC            34/55    61.82%
+  MONEY           2/49     4.08%
+  NORP          221/265   83.40%
+  ORDINAL         9/13    69.23%
+  ORG           442/1066  41.46%
+  PERCENT         1/29     3.45%
+  PERSON        430/1161  37.04%
+  PRODUCT        12/34    35.29%
+  QUANTITY        7/112    6.25%
+  TIME           11/39    28.21%
+  WORK_OF_ART    39/183   21.31%
+
+================================================================================
+COMPARISON VS FIX #1 (fix1_eval_20260412_144946.txt)
+================================================================================
+  ⚠️  Note: test sets differ in size and label distribution — not directly
+  comparable. Fix1 had 1465 redactions; this run has 5645.
+
+  Raw accuracy : 67.17% → 39.27%  (-27.90 pp) — REGRESSION
+  Decision     : ROLLBACK per agreed protocol
+================================================================================
