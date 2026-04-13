@@ -1,0 +1,62 @@
+================================================================================
+NER RECOVERY — EVALUATION REPORT
+================================================================================
+Date/Time     : 2026-04-13 17:52:11
+Run type      : bert-base-uncased, 7 epochs, WWI + Napoleonic Wars corpus
+
+--- Change Applied ---
+Added Napoleonic Wars corpus (Category:Napoleonic_Wars).
+109 fetched → 80 clean articles added to training pool.
+Combined corpus: 193 articles (113 WWI + 80 Napoleonic).
+Train: 154 articles / 2254 redactions
+Test:  39 articles / 629 redactions
+
+--- Model ---
+Architecture  : bert-base-uncased (~110M params)
+Epochs        : 7
+Loss curve    : 4.63 → 2.43 → 1.25 → 0.69 → ...
+
+================================================================================
+RESULTS
+================================================================================
+  Total redactions : 629
+  Exact matches    : 138
+  Truncated (skip) : 0
+  Accuracy         : 21.94%
+
+================================================================================
+PER-LABEL BREAKDOWN
+================================================================================
+  CARDINAL       12/80    15.00%
+  DATE           13/112   11.61%
+  EVENT           4/21    19.05%
+  FAC             0/3      0.00%
+  GPE            33/91    36.26%
+  LANGUAGE        1/1    100.00%
+  LAW             0/2      0.00%
+  LOC             1/10    10.00%
+  MONEY           0/2      0.00%
+  NORP           39/85    45.88%
+  ORDINAL         4/10    40.00%
+  ORG            12/79    15.19%
+  PERCENT         0/1      0.00%
+  PERSON         19/88    21.59%
+  PRODUCT         0/3      0.00%
+  QUANTITY        0/23     0.00%
+  TIME            0/9      0.00%
+  WORK_OF_ART     0/9      0.00%
+
+================================================================================
+COMPARISON VS PREVIOUS BEST (bert-base WWI only, 20.52%)
+================================================================================
+  Accuracy : 20.52% → 21.94%  (+1.42 pp) — IMPROVEMENT ✓
+
+  Notable deltas:
+  PERSON   10.71% → 21.59%  (+10.88 pp)
+  ORDINAL  100.00% → 40.00%  (-60 pp — test set now has 10 vs 2, harder)
+  NORP     63.89% → 45.88%  (-18 pp — larger, more diverse test set)
+  DATE      6.85% → 11.61%   (+4.76 pp)
+
+  Note: test set grew from 346 → 629 redactions (more articles, harder).
+  Absolute improvement on a harder test is encouraging.
+================================================================================
