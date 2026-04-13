@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-CLEAN_FILE = Path("data/wwi_clean.jsonl")
+CLEAN_FILE = Path("data/all_clean.jsonl")
 
 WIKITEXT_PATTERNS = [
     (r"\{\{", "template opening {{"),

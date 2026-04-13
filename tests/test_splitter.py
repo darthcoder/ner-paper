@@ -9,7 +9,7 @@ from pathlib import Path
 
 TRAIN = Path("data/train_clean.jsonl")
 TEST = Path("data/test_clean.jsonl")
-SOURCE = Path("data/wwi_clean.jsonl")
+SOURCE = Path("data/all_clean.jsonl")
 
 
 def load_pageids(path: Path) -> set[int]:

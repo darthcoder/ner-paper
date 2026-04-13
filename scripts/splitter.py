@@ -3,7 +3,7 @@ import json
 import random
 from pathlib import Path
 
-IN = Path("data/wwi_clean.jsonl")
+IN = Path("data/all_clean.jsonl")
 TRAIN_OUT = Path("data/train_clean.jsonl")
 TEST_OUT = Path("data/test_clean.jsonl")
 SEED = 42
