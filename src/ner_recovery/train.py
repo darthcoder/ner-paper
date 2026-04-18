@@ -1,8 +1,10 @@
-"""Fine-tune DistilBERT as a masked language model on the redacted WWI corpus.
+"""Fine-tune T5-small for self-supervised span reconstruction.
 
-For each article, [REDACTED] spans are reconstructed to their original entity
-text. Those entity token positions are then masked in input_ids so the model
-learns to predict the original tokens from surrounding context.
+Input:  redacted text with [REDACTED] replaced by <extra_id_N> sentinels
+Target: <extra_id_0> entity0 <extra_id_1> entity1 ...
+
+No annotation labels are used — the (redacted_text, original) pairs in the
+JSONL are the sole training signal.
 """
 from __future__ import annotations
 
@@ -12,139 +14,97 @@ from pathlib import Path
 
 import torch
 from torch.utils.data import DataLoader, Dataset
-from transformers import (
-    BertForMaskedLM,
-    BertTokenizerFast,
-    get_linear_schedule_with_warmup,
-)
+from transformers import T5ForConditionalGeneration, T5TokenizerFast, get_linear_schedule_with_warmup
 from torch.optim import AdamW
 from tqdm import tqdm
 
 
-MODEL_NAME = "bert-base-uncased"
+MODEL_NAME = "t5-small"
 DATA_PATH = Path("data/train_redacted.jsonl")
 OUTPUT_DIR = Path("models")
-MAX_LENGTH = 512
-STRIDE = 256
+MAX_INPUT_LENGTH = 512
+MAX_TARGET_LENGTH = 128
+CHUNK_REDS = 10       # max redactions per training example
+CONTEXT_CHARS = 400   # chars of surrounding context per chunk
 BATCH_SIZE = 8
 EPOCHS = 7
-LR = 5e-5
-WARMUP_STEPS = 50
+LR = 3e-4
+WARMUP_STEPS = 100
 
 
 # ---------------------------------------------------------------------------
 # Data preparation
 # ---------------------------------------------------------------------------
 
-def reconstruct(text: str, redactions: list[dict]) -> tuple[str, list[tuple[int, int]]]:
-    """Replace [REDACTED] markers with the original entity text.
+def make_examples(record: dict, tokenizer: T5TokenizerFast) -> list[dict]:
+    """Build T5 span-reconstruction examples from one redacted record.
 
-    Returns:
-        original_text: the reconstructed article text
-        spans: list of (start, end) char offsets in original_text for each entity
+    Each example covers up to CHUNK_REDS redactions with surrounding context.
+    Input sentinels are renumbered from 0 within each chunk.
     """
-    parts: list[str] = []
-    spans: list[tuple[int, int]] = []
-    prev = 0
-    char_delta = 0  # cumulative offset shift from prior replacements
-
-    for r in sorted(redactions, key=lambda x: x["start"]):
-        parts.append(text[prev : r["start"]])
-        entity_start = r["start"] + char_delta
-        original = r["original"]
-        parts.append(original)
-        spans.append((entity_start, entity_start + len(original)))
-        char_delta += len(original) - (r["end"] - r["start"])
-        prev = r["end"]
-
-    parts.append(text[prev:])
-    return "".join(parts), spans
-
-
-def make_examples(
-    record: dict,
-    tokenizer: DistilBertTokenizerFast,
-    max_length: int,
-    stride: int,
-) -> list[dict]:
-    """Build sliding-window MLM examples from one redacted record.
-
-    Each example is a dict with input_ids, attention_mask, and labels, all
-    padded to max_length. Labels are -100 everywhere except at entity token
-    positions, where they hold the original token id.
-    """
-    if not record["redactions"]:
+    redactions = sorted(record.get("redactions", []), key=lambda r: r["start"])
+    if not redactions:
         return []
 
-    original_text, entity_spans = reconstruct(record["text"], record["redactions"])
-
-    encoding = tokenizer(
-        original_text,
-        return_offsets_mapping=True,
-        add_special_tokens=False,
-        truncation=False,
-    )
-    token_ids: list[int] = encoding["input_ids"]
-    offset_map: list[tuple[int, int]] = encoding["offset_mapping"]
-
-    # Mark which token positions overlap with an entity span
-    n = len(token_ids)
-    is_entity = [False] * n
-    for ent_start, ent_end in entity_spans:
-        for i, (tok_start, tok_end) in enumerate(offset_map):
-            if tok_end > ent_start and tok_start < ent_end:
-                is_entity[i] = True
-
-    mask_id: int = tokenizer.mask_token_id
-    cls_id: int = tokenizer.cls_token_id
-    sep_id: int = tokenizer.sep_token_id
-    pad_id: int = tokenizer.pad_token_id
-    inner = max_length - 2  # token slots between [CLS] and [SEP]
-
+    text = record["text"]
     examples: list[dict] = []
-    start = 0
 
-    while start < n:
-        end = min(start + inner, n)
-        chunk_ids = token_ids[start:end]
-        chunk_entity = is_entity[start:end]
+    for chunk_start in range(0, len(redactions), CHUNK_REDS):
+        chunk = redactions[chunk_start : chunk_start + CHUNK_REDS]
 
-        if any(chunk_entity):
-            input_ids = [cls_id]
-            labels = [-100]
-            for tid, ent in zip(chunk_ids, chunk_entity):
-                input_ids.append(mask_id if ent else tid)
-                labels.append(tid if ent else -100)
-            input_ids.append(sep_id)
-            labels.append(-100)
+        # Extract a text span covering the chunk with surrounding context.
+        span_start = max(0, chunk[0]["start"] - CONTEXT_CHARS)
+        span_end = min(len(text), chunk[-1]["end"] + CONTEXT_CHARS)
 
-            pad_len = max_length - len(input_ids)
-            examples.append({
-                "input_ids": input_ids + [pad_id] * pad_len,
-                "attention_mask": [1] * len(input_ids) + [0] * pad_len,
-                "labels": labels + [-100] * pad_len,
-            })
+        # Build input: replace only THIS chunk's [REDACTED] markers with sentinels.
+        parts: list[str] = []
+        prev = span_start
+        for i, r in enumerate(chunk):
+            parts.append(text[prev : r["start"]])
+            parts.append(f"<extra_id_{i}>")
+            prev = r["end"]
+        parts.append(text[prev : span_end])
+        input_text = "".join(parts)
 
-        if end == n:
-            break
-        start += stride
+        # Build target: <extra_id_0> entity0 <extra_id_1> entity1 ...
+        target_text = " ".join(
+            f"<extra_id_{i}> {r['original']}" for i, r in enumerate(chunk)
+        )
+
+        inp = tokenizer(
+            input_text,
+            max_length=MAX_INPUT_LENGTH,
+            truncation=True,
+            padding="max_length",
+        )
+        tgt = tokenizer(
+            target_text,
+            max_length=MAX_TARGET_LENGTH,
+            truncation=True,
+            padding="max_length",
+        )
+        # Mask padding in labels so it doesn't contribute to loss.
+        labels = [
+            t if t != tokenizer.pad_token_id else -100
+            for t in tgt["input_ids"]
+        ]
+
+        examples.append({
+            "input_ids": inp["input_ids"],
+            "attention_mask": inp["attention_mask"],
+            "labels": labels,
+        })
 
     return examples
 
 
 class RedactionDataset(Dataset):
-    def __init__(
-        self,
-        path: Path,
-        tokenizer: DistilBertTokenizerFast,
-        max_length: int = MAX_LENGTH,
-        stride: int = STRIDE,
-    ) -> None:
+    def __init__(self, path: Path, tokenizer: T5TokenizerFast) -> None:
         self.examples: list[dict] = []
         with open(path) as f:
             for line in f:
                 record = json.loads(line)
-                self.examples.extend(make_examples(record, tokenizer, max_length, stride))
+                self.examples.extend(make_examples(record, tokenizer))
 
     def __len__(self) -> int:
         return len(self.examples)
@@ -158,15 +118,19 @@ class RedactionDataset(Dataset):
 # ---------------------------------------------------------------------------
 
 def train(args: argparse.Namespace) -> None:
-    device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        "mps" if torch.backends.mps.is_available()
+        else "cuda" if torch.cuda.is_available()
+        else "cpu"
+    )
     print(f"Device: {device}")
 
-    tokenizer = BertTokenizerFast.from_pretrained(MODEL_NAME)
-    model = BertForMaskedLM.from_pretrained(MODEL_NAME)
+    tokenizer = T5TokenizerFast.from_pretrained(MODEL_NAME)
+    model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
     model.to(device)
 
     print("Building dataset...")
-    dataset = RedactionDataset(args.data, tokenizer, args.max_length, args.stride)
+    dataset = RedactionDataset(args.data, tokenizer)
     print(f"  {len(dataset)} training examples from {args.data}")
 
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
@@ -215,21 +179,14 @@ def train(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Fine-tune DistilBERT MLM on the redacted WWI corpus"
+        description="Fine-tune T5-small for self-supervised span reconstruction"
     )
-    parser.add_argument("--data", type=Path, default=DATA_PATH,
-                        help="Path to wwi_redacted.jsonl")
-    parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR,
-                        help="Directory for checkpoints and final model")
-    parser.add_argument("--max-length", type=int, default=MAX_LENGTH,
-                        help="Token window size (default 512)")
-    parser.add_argument("--stride", type=int, default=STRIDE,
-                        help="Sliding window stride (default 256)")
+    parser.add_argument("--data", type=Path, default=DATA_PATH)
+    parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--epochs", type=int, default=EPOCHS)
     parser.add_argument("--lr", type=float, default=LR)
-    parser.add_argument("--warmup", type=int, default=WARMUP_STEPS,
-                        help="Linear warmup steps")
+    parser.add_argument("--warmup", type=int, default=WARMUP_STEPS)
     train(parser.parse_args())
 
 

@@ -1,27 +1,90 @@
-"""Evaluate fine-tuned DistilBERT on redaction recovery.
+"""Evaluate T5-small span reconstruction on redacted corpora.
 
-Replaces every [REDACTED] span with [MASK], runs one inference pass per
-article, takes the top-1 predicted token at each [MASK] position, and
-compares against redactions[].original. Reports exact-match accuracy overall
-and broken down by NER label.
+Reports:
+  - Exact match accuracy overall and per NER label
+  - Hallucination rate: predictions that are non-empty but wrong
+  - Abstention rate: predictions that are empty (model chose not to guess)
+
+Run against in-domain test set and zero-shot Russian corpus to compare.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 
 import torch
-from transformers import BertForMaskedLM, BertTokenizerFast
+from transformers import T5ForConditionalGeneration, T5TokenizerFast
 from tqdm import tqdm
 
 
 MODEL_DIR = Path("models/final")
 DATA_PATH = Path("data/test_redacted.jsonl")
-MAX_LENGTH = 512
-STRIDE = 256
+MAX_INPUT_LENGTH = 512
+MAX_TARGET_LENGTH = 128
+CHUNK_REDS = 10
+CONTEXT_CHARS = 400
+NUM_BEAMS = 4
 
+
+# ---------------------------------------------------------------------------
+# Input formatting (mirrors train.py)
+# ---------------------------------------------------------------------------
+
+def make_chunks(record: dict) -> list[tuple[str, list[dict]]]:
+    """Return list of (input_text, chunk_redactions) for all chunks in record."""
+    redactions = sorted(record.get("redactions", []), key=lambda r: r["start"])
+    if not redactions:
+        return []
+
+    text = record["text"]
+    chunks = []
+
+    for chunk_start in range(0, len(redactions), CHUNK_REDS):
+        chunk = redactions[chunk_start : chunk_start + CHUNK_REDS]
+
+        span_start = max(0, chunk[0]["start"] - CONTEXT_CHARS)
+        span_end = min(len(text), chunk[-1]["end"] + CONTEXT_CHARS)
+
+        parts: list[str] = []
+        prev = span_start
+        for i, r in enumerate(chunk):
+            parts.append(text[prev : r["start"]])
+            parts.append(f"<extra_id_{i}>")
+            prev = r["end"]
+        parts.append(text[prev : span_end])
+
+        chunks.append(("".join(parts), chunk))
+
+    return chunks
+
+
+def parse_predictions(output_text: str, n: int) -> list[str]:
+    """Extract entity predictions from T5 sentinel output.
+
+    Returns a list of length n; empty string where prediction is absent.
+    """
+    predictions: list[str] = []
+    for i in range(n):
+        sentinel = f"<extra_id_{i}>"
+        next_sentinel = f"<extra_id_{i + 1}>"
+        # Match text between this sentinel and the next (or end of string).
+        pattern = (
+            re.escape(sentinel)
+            + r"\s*(.*?)(?="
+            + re.escape(next_sentinel)
+            + r"|</s>|$)"
+        )
+        m = re.search(pattern, output_text, re.DOTALL)
+        predictions.append(m.group(1).strip() if m else "")
+    return predictions
+
+
+# ---------------------------------------------------------------------------
+# Evaluation
+# ---------------------------------------------------------------------------
 
 def evaluate(args: argparse.Namespace) -> None:
     device = torch.device(
@@ -30,139 +93,72 @@ def evaluate(args: argparse.Namespace) -> None:
         else "cpu"
     )
     print(f"Device: {device}")
+    print(f"Model:  {args.model_dir}")
+    print(f"Data:   {args.data}\n")
 
-    tokenizer = BertTokenizerFast.from_pretrained(args.model_dir)
-    model = BertForMaskedLM.from_pretrained(args.model_dir)
+    tokenizer = T5TokenizerFast.from_pretrained(args.model_dir)
+    model = T5ForConditionalGeneration.from_pretrained(args.model_dir)
     model.to(device)
     model.eval()
 
     total = 0
     correct = 0
-    skipped = 0  # [MASK] tokens truncated out of the 512-token window
+    hallucinated = 0   # non-empty, wrong prediction
+    abstained = 0      # empty prediction
     by_label: dict[str, list[bool]] = defaultdict(list)
 
     with open(args.data) as f:
         records = [json.loads(line) for line in f]
 
     for record in tqdm(records, desc="Articles"):
-        redactions = record["redactions"]
-        if not redactions:
+        chunks = make_chunks(record)
+        if not chunks:
             continue
 
-        sorted_reds = sorted(redactions, key=lambda r: r["start"])
+        for input_text, chunk in chunks:
+            enc = tokenizer(
+                input_text,
+                max_length=MAX_INPUT_LENGTH,
+                truncation=True,
+                return_tensors="pt",
+            ).to(device)
 
-        # Determine how many tokens each original entity occupies so we can
-        # insert exactly that many [MASK] tokens (fixing the single-mask bug).
-        red_n_tokens = [
-            max(len(tokenizer.encode(r["original"], add_special_tokens=False)), 1)
-            for r in sorted_reds
-        ]
-
-        # Build masked text with the correct number of [MASK]s per entity.
-        parts: list[str] = []
-        prev = 0
-        for r, n_tok in zip(sorted_reds, red_n_tokens):
-            parts.append(record["text"][prev:r["start"]])
-            parts.append(" ".join(["[MASK]"] * n_tok))
-            prev = r["end"]
-        parts.append(record["text"][prev:])
-        masked_text = "".join(parts)
-
-        # Tokenize without truncation.
-        full_enc = tokenizer(
-            masked_text,
-            add_special_tokens=False,
-            truncation=False,
-        )
-        all_ids: list[int] = full_enc["input_ids"]
-
-        mask_tok_id = tokenizer.mask_token_id
-        all_mask_positions = [i for i, tid in enumerate(all_ids) if tid == mask_tok_id]
-
-        # Group mask token positions by redaction index.
-        red_mask_groups: list[list[int]] = []
-        pos = 0
-        for n_tok in red_n_tokens:
-            red_mask_groups.append(all_mask_positions[pos:pos + n_tok])
-            pos += n_tok
-
-        # Build lookup: any mask token position → its redaction index.
-        tok_to_red: dict[int, int] = {
-            tok_idx: red_idx
-            for red_idx, group in enumerate(red_mask_groups)
-            for tok_idx in group
-        }
-
-        evaluated_red_indices: set[int] = set()
-
-        cls_id = tokenizer.cls_token_id
-        sep_id = tokenizer.sep_token_id
-        pad_id = tokenizer.pad_token_id
-        inner = MAX_LENGTH - 2  # slots between [CLS] and [SEP]
-        n = len(all_ids)
-
-        start = 0
-        while start < n:
-            end = min(start + inner, n)
-            chunk_ids = all_ids[start:end]
-
-            chunk_mask_global = [i for i in range(start, end) if all_ids[i] == mask_tok_id]
-            new_reds_in_chunk = {
-                tok_to_red[i] for i in chunk_mask_global
-                if i in tok_to_red and tok_to_red[i] not in evaluated_red_indices
-            }
-
-            if not new_reds_in_chunk:
-                if end == n:
-                    break
-                start += STRIDE
-                continue
-
-            # Build padded input for this window.
-            input_ids_win = [cls_id] + chunk_ids + [sep_id]
-            pad_len = MAX_LENGTH - len(input_ids_win)
-            input_ids_win = input_ids_win + [pad_id] * pad_len
-            attention_mask = [1] * (len(chunk_ids) + 2) + [0] * pad_len
-
-            t_input = torch.tensor([input_ids_win], device=device)
-            t_mask = torch.tensor([attention_mask], device=device)
             with torch.no_grad():
-                logits = model(input_ids=t_input, attention_mask=t_mask).logits
+                output_ids = model.generate(
+                    **enc,
+                    max_new_tokens=MAX_TARGET_LENGTH,
+                    num_beams=args.num_beams,
+                    early_stopping=True,
+                )
 
-            for red_idx in new_reds_in_chunk:
-                group = red_mask_groups[red_idx]
-                # All mask tokens for this entity must fall within this window.
-                if not all(start <= tok_idx < end for tok_idx in group):
-                    continue
+            output_text = tokenizer.decode(output_ids[0], skip_special_tokens=False)
+            predictions = parse_predictions(output_text, len(chunk))
 
-                evaluated_red_indices.add(red_idx)
-                r = sorted_reds[red_idx]
-
-                # Predict one token per mask position, then decode together.
-                predicted_ids = [
-                    logits[0, (tok_idx - start) + 1].argmax().item()  # +1 for [CLS]
-                    for tok_idx in group
-                ]
-                prediction = tokenizer.decode(predicted_ids, skip_special_tokens=True).strip()
-                match = prediction.lower() == r["original"].lower()
+            for pred, r in zip(predictions, chunk):
                 total += 1
-                correct += int(match)
-                by_label[r["label"]].append(match)
+                gold = r["original"].strip().lower()
+                pred_norm = pred.lower()
 
-            if end == n:
-                break
-            start += STRIDE
-
-        skipped += len(sorted_reds) - len(evaluated_red_indices)
+                if pred_norm == gold:
+                    correct += 1
+                    by_label[r["label"]].append(True)
+                elif pred_norm == "":
+                    abstained += 1
+                    by_label[r["label"]].append(False)
+                else:
+                    hallucinated += 1
+                    by_label[r["label"]].append(False)
 
     accuracy = correct / total if total else 0.0
+    halluc_rate = hallucinated / total if total else 0.0
+    abstain_rate = abstained / total if total else 0.0
 
-    print(f"\n{'='*42}")
-    print(f"  Total redactions : {total}")
-    print(f"  Exact matches    : {correct}")
-    print(f"  Truncated (skip) : {skipped}")
-    print(f"  Accuracy         : {accuracy:.2%}")
-    print(f"{'='*42}")
+    print(f"\n{'='*48}")
+    print(f"  Total redactions  : {total}")
+    print(f"  Exact matches     : {correct}  ({accuracy:.2%})")
+    print(f"  Hallucinations    : {hallucinated}  ({halluc_rate:.2%})")
+    print(f"  Abstentions       : {abstained}  ({abstain_rate:.2%})")
+    print(f"{'='*48}")
     print("\nPer-label breakdown:")
     for label, results in sorted(by_label.items()):
         n = len(results)
@@ -172,12 +168,11 @@ def evaluate(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Evaluate DistilBERT MLM on redaction recovery"
+        description="Evaluate T5 span reconstruction on redacted corpora"
     )
-    parser.add_argument("--model-dir", type=Path, default=MODEL_DIR,
-                        help="Path to saved model (default: models/final)")
-    parser.add_argument("--data", type=Path, default=DATA_PATH,
-                        help="Path to wwi_redacted.jsonl")
+    parser.add_argument("--model-dir", type=Path, default=MODEL_DIR)
+    parser.add_argument("--data", type=Path, default=DATA_PATH)
+    parser.add_argument("--num-beams", type=int, default=NUM_BEAMS)
     evaluate(parser.parse_args())
 
 
