@@ -2,38 +2,46 @@
 
 A research project training a model to infer redacted named entities from text. Given a passage with `[REDACTED]` tokens, the model predicts what was removed.
 
-Training corpus: 145 World War I Wikipedia articles.
-
 ---
 
 ## Task
 
-Each article is processed by a spaCy NER tagger. A subset of detected entities are replaced with `[REDACTED]`. The model — fine-tuned DistilBERT as a Masked Language Model — is trained to recover the original entity text from surrounding context.
+Each article is processed by a spaCy NER tagger. A subset of detected entities are replaced with `[REDACTED]`. The model is trained to recover the original entity text from surrounding context.
 
 ---
 
 ## Pipeline
 
-Three sequential data stages:
+### Corpus fetching
 
 ```bash
-# Stage 1: Fetch raw Wikipedia articles → wwi_corpus.jsonl
-python fetcher.py
+# Wikipedia WWI portal (2093 raw articles)
+python scripts/fetch_wikipedia_portal.py
 
-# Stage 2: Strip wikitext markup → data/wwi_clean.jsonl
-python scripts/janitor.py
+# Wikisource WW1 primary sources (1043 articles)
+python scripts/fetch_wikisource.py --output data/wikisource_corpus.jsonl
 
-# Stage 3: Split 80/20 train/test
+# Project Gutenberg WW1 books (317 entries)
+python scripts/fetch_gutenberg.py --output data/gutenberg_corpus.jsonl
+```
+
+### Cleaning, splitting, redacting
+
+```bash
+# Strip wikitext markup
+python scripts/janitor.py --input <corpus>.jsonl --output data/<corpus>_clean.jsonl
+
+# Split 80/20 train/test
 python scripts/splitter.py
 
-# Stage 4a: Redact train split (weighted or uniform)
+# Redact train split (weighted)
 python scripts/redactor.py --input data/train_clean.jsonl --output data/train_redacted.jsonl --mode train
 
-# Stage 4b: Redact test split (always uniform)
+# Redact test split (uniform)
 python scripts/redactor.py --input data/test_clean.jsonl --output data/test_redacted.jsonl --mode test
 ```
 
-Then train and evaluate:
+### Train and evaluate
 
 ```bash
 uv run train
@@ -55,14 +63,16 @@ python -m spacy download en_core_web_sm
 
 ## Data
 
-All processed data is committed to this repo and serves as a benchmark artifact.
-
 | File | Description |
 |---|---|
-| `wwi_corpus.jsonl` | Raw wikitext, 145 articles |
-| `data/wwi_clean.jsonl` | Plaintext after markup stripping |
-| `data/train_clean.jsonl` | 116 articles (80% split, seed=42) |
-| `data/test_clean.jsonl` | 29 articles (20% split, seed=42) |
+| `data/wwi_portal_corpus.jsonl` | Raw wikitext, ~2093 Wikipedia WWI articles |
+| `data/wikisource_corpus.jsonl` | Raw wikitext, 1043 Wikisource WW1 documents |
+| `data/gutenberg_corpus.jsonl` | Raw text, 317 Project Gutenberg WW1 books |
+| `data/wwi_clean.jsonl` | Plaintext WWI Wikipedia articles |
+| `data/napoleonic_clean.jsonl` | Plaintext Napoleonic Wars articles |
+| `data/wikisource_clean.jsonl` | Plaintext Wikisource documents (276 after filtering) |
+| `data/train_clean.jsonl` | Training split (80%, seed=42) |
+| `data/test_clean.jsonl` | Test split (20%, seed=42) |
 | `data/train_redacted.jsonl` | Training set with `[REDACTED]` tokens + annotations |
 | `data/test_redacted.jsonl` | Held-out test set with `[REDACTED]` tokens + annotations |
 
@@ -85,10 +95,10 @@ All processed data is committed to this repo and serves as a benchmark artifact.
 
 ## Model
 
-- **Architecture**: `distilbert-base-uncased` — encoder-only Masked Language Model (~66M params)
-- **Task framing**: Entity token positions are masked in `input_ids`; model predicts original tokens from bidirectional context
-- **Sliding window**: 512-token window, 256-token stride for long articles
-- **Hyperparameters**: 3 epochs, batch size 8, lr 5e-5, AdamW + linear warmup (50 steps)
+- **Architecture**: `t5-small` — encoder-decoder (~60M params), span reconstruction
+- **Task framing**: Input is text with `[REDACTED]` tokens; model generates the original entity spans
+- **Previous**: `bert-base-uncased` MLM (~110M params), masked token prediction
+- **Hyperparameters**: 7 epochs, batch size 8, lr 5e-5, AdamW + linear warmup (50 steps)
 
 ---
 
@@ -101,7 +111,7 @@ All processed data is committed to this repo and serves as a benchmark artifact.
 | `test` (uniform) | 2–5% of entities, min 1 | Uniform random |
 | `train` (weighted) | 10–20% of entities, min 1 | Weighted by inverse accuracy — weak labels sampled more |
 
-The test split always uses uniform mode to reflect natural entity distribution.
+The test split always uses uniform mode to reflect natural entity distribution. Redaction seed is fixed at 42.
 
 ---
 
@@ -113,47 +123,42 @@ All eval reports are saved in `evals/` with timestamps.
 
 | Run | Accuracy | Notes |
 |---|---|---|
-| `baseline_eval_20260412_144546` | 37.95% | Original model, train=eval, **single `[MASK]` bug** |
-| `fix1_eval_20260412_144946` | 67.17% | Multi-token mask fix applied, still train=eval (inflated) |
-| `fix2_eval_20260412_151920` | 39.27% | Weighted redaction, train=eval, larger test set |
-| `fix2b_eval_20260412_160328` | 18.21% | Weighted train, 80/20 split, **first honest held-out eval** |
-| `clean_baseline_eval_20260412_162911` | **17.34%** | Uniform train, 80/20 split — **true clean baseline** |
+| `baseline_eval_20260412_144546` | 37.95% | DistilBERT, train=eval, **single `[MASK]` bug** |
+| `fix1_eval_20260412_144946` | 67.17% | Multi-token mask fix, still train=eval (inflated) |
+| `fix2_eval_20260412_151920` | 39.27% | Weighted redaction, train=eval |
+| `fix2b_eval_20260412_160328` | 18.21% | Weighted train, 80/20 split, first honest held-out eval |
+| `clean_baseline_eval_20260412_162911` | 17.34% | Uniform train, 80/20 split — **true clean baseline** |
+| `7epoch_eval_20260412_173053` | 17.63% | DistilBERT, 7 epochs |
+| `bert_base_eval_20260412_190501` | 20.52% | bert-base-uncased, 7 epochs, WWI only |
+| `napoleonic_eval_20260413_175211` | **21.94%** | bert-base-uncased, 7 epochs, WWI + Napoleonic corpus — **current best** |
 
-### True baseline (held-out test set, 346 redactions across 29 articles)
+### Best result (21.94%)
 
 ```
-Accuracy : 17.34%  (60/346)
+Train : 154 articles / 2254 redactions (WWI + Napoleonic Wars)
+Test  :  39 articles / 629 redactions
 ```
 
 | Label | Correct | Total | Accuracy |
 |---|---|---|---|
-| ORDINAL | 2 | 2 | 100.00% |
-| NORP | 19 | 36 | 52.78% |
-| GPE | 19 | 56 | 33.93% |
-| CARDINAL | 3 | 25 | 12.00% |
-| EVENT | 3 | 24 | 12.50% |
-| ORG | 6 | 48 | 12.50% |
-| WORK_OF_ART | 1 | 8 | 12.50% |
-| DATE | 4 | 73 | 5.48% |
-| PERSON | 3 | 56 | 5.36% |
-| FAC | 0 | 4 | 0.00% |
-| LAW | 0 | 2 | 0.00% |
-| LOC | 0 | 7 | 0.00% |
-| MONEY | 0 | 1 | 0.00% |
-| PRODUCT | 0 | 3 | 0.00% |
-| TIME | 0 | 1 | 0.00% |
-
-### Key finding: fix #1 (multi-token mask correction)
-
-The original `eval.py` replaced every `[REDACTED]` with a single `[MASK]` token, making exact-match impossible for any multi-token entity (e.g. "Franz Ferdinand", "Western Front"). The fix tokenizes each original entity to determine N, inserts N `[MASK]` tokens, predicts each position, and joins the decoded tokens. This was responsible for the apparent jump from 37.95% → 67.17% — though that comparison was on training data.
+| NORP | 39 | 85 | 45.88% |
+| GPE | 33 | 91 | 36.26% |
+| ORDINAL | 4 | 10 | 40.00% |
+| PERSON | 19 | 88 | 21.59% |
+| EVENT | 4 | 21 | 19.05% |
+| CARDINAL | 12 | 80 | 15.00% |
+| ORG | 12 | 79 | 15.19% |
+| DATE | 13 | 112 | 11.61% |
+| LOC | 1 | 10 | 10.00% |
 
 ---
 
 ## Lessons Learned
 
-1. **Always separate train and eval data.** Early evals (37.95%, 67.17%) were on the same articles used for training — measuring memorization, not generalization. The honest number is **17.34%**.
-2. **Multi-token entity evaluation matters.** A single `[MASK]` per entity silently kills accuracy for all multi-word entities. Always match mask count to token count.
-3. **Error-driven weighted redaction** (oversampling weak labels during training) showed marginal improvement (18.21% vs 17.34%) but not statistically significant on this corpus size.
+1. **Always separate train and eval data.** Early evals (37.95%, 67.17%) measured memorization, not generalization. The honest number is **17.34%**.
+2. **Multi-token entity evaluation matters.** A single `[MASK]` per entity kills accuracy for multi-word entities. Always match mask count to token count.
+3. **Corpus breadth helps.** Adding the Napoleonic Wars corpus (+80 articles) improved accuracy from 20.52% → 21.94% on a harder test set.
+4. **7 epochs > 3.** On this corpus size, 3 epochs undertrained — 7 is the working default.
 
 ---
 
