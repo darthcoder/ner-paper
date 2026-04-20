@@ -6,7 +6,7 @@ A research project training a model to infer redacted named entities from text. 
 
 ## Task
 
-Each article is processed by a spaCy NER tagger. A subset of detected entities are replaced with `[REDACTED]`. The model is trained to recover the original entity text from surrounding context.
+Each article is processed by a spaCy NER tagger. A subset of detected entities are replaced with typed mask tokens (e.g. `[REDACTED:GPE]`, `[REDACTED:PERSON]`). The model is trained to recover the original entity text from surrounding context. Embedding the entity type in the mask token — suggested by Meesum — gives the model a strong prior: predicting a country name, a person name, and a date are very different tasks.
 
 ---
 
@@ -82,7 +82,7 @@ python -m spacy download en_core_web_sm
 {
   "pageid": 4764461,
   "title": "World War I",
-  "text": "...Austria-Hungary blamed [REDACTED], and declared war...",
+  "text": "...Austria-Hungary blamed [REDACTED:GPE], and declared war...",
   "redactions": [
     {"start": 1107, "end": 1117, "label": "GPE", "original": "Serbia"}
   ]
