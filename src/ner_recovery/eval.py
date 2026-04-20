@@ -1,11 +1,8 @@
-"""Evaluate T5-small span reconstruction on redacted corpora.
+"""Evaluate distilbert-base-uncased MLM for engrammatic named entity inference.
 
-Reports:
-  - Exact match accuracy overall and per NER label
-  - Hallucination rate: predictions that are non-empty but wrong
-  - Abstention rate: predictions that are empty (model chose not to guess)
-
-Run against in-domain test set and zero-shot Russian corpus to compare.
+For each [REDACTED:LABEL] token, replaces it with N [MASK] tokens (where N
+matches the original entity's subword count), runs the model, and joins the
+predicted tokens. Reports exact-match accuracy overall and per NER label.
 """
 from __future__ import annotations
 
@@ -14,72 +11,71 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from datetime import datetime
 
 import torch
-from transformers import T5ForConditionalGeneration, T5TokenizerFast
+from transformers import DistilBertForMaskedLM, DistilBertTokenizerFast
 from tqdm import tqdm
 
 
 MODEL_DIR = Path("models/final")
 DATA_PATH = Path("data/test_redacted.jsonl")
-MAX_INPUT_LENGTH = 512
-MAX_TARGET_LENGTH = 128
-CHUNK_REDS = 10
-CONTEXT_CHARS = 400
-NUM_BEAMS = 4
+MAX_LENGTH = 512
+STRIDE = 256
 
 
 # ---------------------------------------------------------------------------
-# Input formatting (mirrors train.py)
+# Inference
 # ---------------------------------------------------------------------------
 
-def make_chunks(record: dict) -> list[tuple[str, list[dict]]]:
-    """Return list of (input_text, chunk_redactions) for all chunks in record."""
+REDACTED_RE = re.compile(r"\[REDACTED(?::[A-Z_]+)?\]")
+
+
+def predict_record(record: dict, model: BertForMaskedLM, tokenizer: BertTokenizerFast, device: torch.device) -> list[tuple[str, str, str]]:
+    """Return list of (predicted, original, label) for each redaction."""
+    text = record["text"]
     redactions = sorted(record.get("redactions", []), key=lambda r: r["start"])
     if not redactions:
         return []
 
-    text = record["text"]
-    chunks = []
+    results = []
 
-    for chunk_start in range(0, len(redactions), CHUNK_REDS):
-        chunk = redactions[chunk_start : chunk_start + CHUNK_REDS]
+    for r in redactions:
+        original = r["original"]
+        label = r["label"]
 
-        span_start = max(0, chunk[0]["start"] - CONTEXT_CHARS)
-        span_end = min(len(text), chunk[-1]["end"] + CONTEXT_CHARS)
+        # Get number of subword tokens for the original entity
+        entity_ids = tokenizer.encode(original, add_special_tokens=False)
+        n_masks = max(1, len(entity_ids))
 
-        parts: list[str] = []
-        prev = span_start
-        for i, r in enumerate(chunk):
-            parts.append(text[prev : r["start"]])
-            parts.append(f"<extra_id_{i}>")
-            prev = r["end"]
-        parts.append(text[prev : span_end])
+        # Build input: replace this redaction's token with N [MASK]s
+        masked_text = text[: r["start"]] + " ".join([tokenizer.mask_token] * n_masks) + text[r["end"] :]
 
-        chunks.append(("".join(parts), chunk))
+        enc = tokenizer(
+            masked_text,
+            max_length=MAX_LENGTH,
+            truncation=True,
+            return_tensors="pt",
+        ).to(device)
 
-    return chunks
+        input_ids = enc["input_ids"][0]
+        mask_positions = (input_ids == tokenizer.mask_token_id).nonzero(as_tuple=True)[0]
 
+        if len(mask_positions) == 0:
+            results.append(("", original, label))
+            continue
 
-def parse_predictions(output_text: str, n: int) -> list[str]:
-    """Extract entity predictions from T5 sentinel output.
+        with torch.no_grad():
+            logits = model(**enc).logits[0]
 
-    Returns a list of length n; empty string where prediction is absent.
-    """
-    predictions: list[str] = []
-    for i in range(n):
-        sentinel = f"<extra_id_{i}>"
-        next_sentinel = f"<extra_id_{i + 1}>"
-        # Match text between this sentinel and the next (or end of string).
-        pattern = (
-            re.escape(sentinel)
-            + r"\s*(.*?)(?="
-            + re.escape(next_sentinel)
-            + r"|</s>|$)"
-        )
-        m = re.search(pattern, output_text, re.DOTALL)
-        predictions.append(m.group(1).strip() if m else "")
-    return predictions
+        predicted_tokens = [
+            tokenizer.decode([logits[pos].argmax().item()]).strip()
+            for pos in mask_positions
+        ]
+        predicted = "".join(predicted_tokens).strip()
+        results.append((predicted, original, label))
+
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -96,68 +92,32 @@ def evaluate(args: argparse.Namespace) -> None:
     print(f"Model:  {args.model_dir}")
     print(f"Data:   {args.data}\n")
 
-    tokenizer = T5TokenizerFast.from_pretrained(args.model_dir)
-    model = T5ForConditionalGeneration.from_pretrained(args.model_dir)
+    tokenizer = DistilBertTokenizerFast.from_pretrained(args.model_dir)
+    model = DistilBertForMaskedLM.from_pretrained(args.model_dir)
     model.to(device)
     model.eval()
 
-    total = 0
-    correct = 0
-    hallucinated = 0   # non-empty, wrong prediction
-    abstained = 0      # empty prediction
+    total = correct = 0
     by_label: dict[str, list[bool]] = defaultdict(list)
 
     with open(args.data) as f:
         records = [json.loads(line) for line in f]
 
     for record in tqdm(records, desc="Articles"):
-        chunks = make_chunks(record)
-        if not chunks:
-            continue
-
-        for input_text, chunk in chunks:
-            enc = tokenizer(
-                input_text,
-                max_length=MAX_INPUT_LENGTH,
-                truncation=True,
-                return_tensors="pt",
-            ).to(device)
-
-            with torch.no_grad():
-                output_ids = model.generate(
-                    **enc,
-                    max_new_tokens=MAX_TARGET_LENGTH,
-                    num_beams=args.num_beams,
-                    early_stopping=True,
-                )
-
-            output_text = tokenizer.decode(output_ids[0], skip_special_tokens=False)
-            predictions = parse_predictions(output_text, len(chunk))
-
-            for pred, r in zip(predictions, chunk):
-                total += 1
-                gold = r["original"].strip().lower()
-                pred_norm = pred.lower()
-
-                if pred_norm == gold:
-                    correct += 1
-                    by_label[r["label"]].append(True)
-                elif pred_norm == "":
-                    abstained += 1
-                    by_label[r["label"]].append(False)
-                else:
-                    hallucinated += 1
-                    by_label[r["label"]].append(False)
+        for predicted, original, label in predict_record(record, model, tokenizer, device):
+            total += 1
+            match = predicted.lower() == original.strip().lower()
+            if match:
+                correct += 1
+            by_label[label].append(match)
 
     accuracy = correct / total if total else 0.0
-    halluc_rate = hallucinated / total if total else 0.0
-    abstain_rate = abstained / total if total else 0.0
 
     print(f"\n{'='*48}")
-    print(f"  Total redactions  : {total}")
-    print(f"  Exact matches     : {correct}  ({accuracy:.2%})")
-    print(f"  Hallucinations    : {hallucinated}  ({halluc_rate:.2%})")
-    print(f"  Abstentions       : {abstained}  ({abstain_rate:.2%})")
+    print(f"  Total redactions : {total}")
+    print(f"  Exact matches    : {correct}")
+    print(f"  Truncated (skip) : 0")
+    print(f"  Accuracy         : {accuracy:.2%}")
     print(f"{'='*48}")
     print("\nPer-label breakdown:")
     for label, results in sorted(by_label.items()):
@@ -165,14 +125,33 @@ def evaluate(args: argparse.Namespace) -> None:
         c = sum(results)
         print(f"  {label:<12} {c:>4}/{n:<4}  {c/n:.2%}")
 
+    # Save eval report
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    report_path = Path("evals") / f"eval_{timestamp}.txt"
+    report_path.parent.mkdir(exist_ok=True)
+    with report_path.open("w") as f:
+        f.write(f"{'='*80}\nNER RECOVERY — EVALUATION REPORT\n{'='*80}\n")
+        f.write(f"Date/Time     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Model         : {args.model_dir}\n")
+        f.write(f"Data          : {args.data}\n\n")
+        f.write(f"{'='*80}\nRESULTS\n{'='*80}\n")
+        f.write(f"  Total redactions : {total}\n")
+        f.write(f"  Exact matches    : {correct}\n")
+        f.write(f"  Accuracy         : {accuracy:.2%}\n\n")
+        f.write(f"{'='*80}\nPER-LABEL BREAKDOWN\n{'='*80}\n")
+        for label, results in sorted(by_label.items()):
+            n = len(results)
+            c = sum(results)
+            f.write(f"  {label:<12} {c:>4}/{n:<4}  {c/n:.2%}\n")
+    print(f"\nReport saved → {report_path}")
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Evaluate T5 span reconstruction on redacted corpora"
+        description="Evaluate BERT MLM on redacted corpora"
     )
     parser.add_argument("--model-dir", type=Path, default=MODEL_DIR)
     parser.add_argument("--data", type=Path, default=DATA_PATH)
-    parser.add_argument("--num-beams", type=int, default=NUM_BEAMS)
     evaluate(parser.parse_args())
 
 
