@@ -11,8 +11,8 @@ from pathlib import Path
 
 import spacy
 
-MASK = "[REDACTED]"
-MASK_LEN = len(MASK)
+def mask(label: str) -> str:
+    return f"[REDACTED:{label}]"
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -76,9 +76,10 @@ def redact(text: str, mode: str, rng: random.Random) -> tuple[str, list[dict]]:
     for ent in chosen:
         parts.append(text[prev_end:ent.start_char])
         new_start = ent.start_char + offset
-        parts.append(MASK)
-        new_end = new_start + MASK_LEN
-        offset += MASK_LEN - (ent.end_char - ent.start_char)
+        m = mask(ent.label_)
+        parts.append(m)
+        new_end = new_start + len(m)
+        offset += len(m) - (ent.end_char - ent.start_char)
         redactions.append({
             "start": new_start,
             "end": new_end,
