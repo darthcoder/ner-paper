@@ -118,6 +118,7 @@ Seed fixed at 42 for reproducibility.
 
 Stored in `refs/`:
 
+- Engram (conditional memory / constrained lookup): `2601.07372v1.pdf` — via Maryam ([@analyticsCamp](https://www.youtube.com/@analyticsCamp))
 - BERT: `bert_1810.04805.pdf`
 - Blank language models: `blank_lm_2002.03079.pdf`
 - Fill-in-the-blank: `fill_blanks_2005.05339.pdf`
