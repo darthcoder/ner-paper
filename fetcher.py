@@ -7,7 +7,7 @@ from pathlib import Path
 
 import requests
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
+HEADERS = {"User-Agent": "ner-recovery/0.1 (research; https://github.com/darthcoder/ner-paper)"}
 API = "https://en.wikipedia.org/w/api.php"
 MAX_RETRIES = 3
 
@@ -175,7 +175,7 @@ def main() -> None:
                 article = fetch_article(title)
                 f.write(json.dumps(article) + "\n")
                 print(f"  [{i+1}/{len(titles)}] {title}", flush=True)
-                time.sleep(0.1)
+                time.sleep(args.sleep)
             except Exception as e:
                 print(f"  SKIP {title}: {e}")
 
