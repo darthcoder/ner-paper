@@ -12,6 +12,8 @@ Language models like GPT, Claude, and others are deployed everywhere — answeri
 
 Our specific angle: **using World War I history as a test bed.** WWI is rich with named entities (generals, diplomats, nations, battles, treaties), well-documented, and challenging enough that it reveals gaps in a model's knowledge.
 
+**A key insight from Meesum**: Instead of just masking entity names with a generic `[MASK]` token, we embed the entity *type* in the mask itself — `[REDACTED:PERSON]`, `[REDACTED:GPE]`, etc. This gives the model a strong prior: predicting a country name, a person name, and a date are very different tasks. It's a small detail with big implications for what the model can learn.
+
 ---
 
 ## The Idea
