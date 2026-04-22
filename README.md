@@ -1,128 +1,144 @@
 # Engrammatic Named Entity Inference
 
-A research project probing a model's latent entity knowledge by training it to infer redacted named entities from context. Given a passage with typed mask tokens (e.g. `[REDACTED:GPE]`, `[REDACTED:PERSON]`), the model predicts what was removed.
+## What's This About?
 
-Embedding the entity type in the mask token — suggested by Meesum — gives the model a strong prior: predicting a country name, a person name, and a date are very different tasks.
+Imagine you're reading a history book where every person's name has been covered up with a sticky note that says `[REDACTED:PERSON]`. Your job is to guess who it was based on everything else written around it. That's essentially what this project teaches an AI to do — but with more sophistication.
+
+The core question we're asking: **Can a language model learn to reconstruct missing named entities (people, places, organizations) just from context?** And more importantly, what does it tell us about how well the model actually understands the world?
+
+### Why This Matters
+
+Language models like GPT, Claude, and others are deployed everywhere — answering questions, writing code, summarizing documents. But we don't fully understand what they actually "know" versus what they memorized or hallucinate. If we can train a model to successfully fill in redacted names, we can probe its real knowledge of historical actors, geography, and relationships. This is a window into the model's internal understanding and a potential detector for hallucinations.
+
+Our specific angle: **using World War I history as a test bed.** WWI is rich with named entities (generals, diplomats, nations, battles, treaties), well-documented, and challenging enough that it reveals gaps in a model's knowledge.
 
 ---
 
-## Task
+## The Idea
 
-Each article is processed by a spaCy NER tagger. A subset of detected entities are replaced with `[REDACTED:{LABEL}]` tokens. The model is trained to recover the original entity text from surrounding context.
+Here's the approach:
+
+1. **Collect historical texts** about World War I from Wikipedia, archives, and historical documents
+2. **Automatically identify named entities** (using a standard NER tagger) — people, places, organizations, events
+3. **Redact some of them** by replacing the name with a token that says the type: `[REDACTED:PERSON]`, `[REDACTED:GPE]` (geographic), etc.
+4. **Train a language model** to predict the original name from the surrounding context
+5. **Test the model** and see how well it recovers the redacted information
+
+The trick: by telling the model "this is definitely a person's name, not a country," we give it a strong hint, which makes the task more realistic. It's not just guessing missing words — it's understanding what kind of entity fits the context.
+
+### Current Status (Honestly)
+
+We're in the middle of this experiment. Our best results so far show the model can recover ~6% of redacted names correctly when we let it choose from a list of known candidates. When we let it generate freely, it's down to ~3–4%. These are modest numbers, and that's actually useful data — it tells us that even with context, reconstructing specific historical names is genuinely hard.
+
+The bigger insight: **over half of the entities the model misses have never appeared in its training data at all.** This is a major bottleneck. It's not that the model can't learn to recognize patterns — it's that some entities are simply absent from its training corpus.
 
 ---
 
-## Pipeline
+## What If We Succeed?
 
-### Corpus fetching
+If we could push this to, say, 40–50% accuracy (still far from perfect, but meaningful), it would mean:
 
-```bash
-# Wikipedia WWI portal
-python scripts/fetch_wikipedia_portal.py
+- **Better hallucination detection**: We'd have a probe for when models confabulate names or facts
+- **Understanding knowledge gaps**: We'd know which historical actors and events a model genuinely doesn't know about
+- **Smarter language models**: Techniques learned here could improve how models handle factual entities in general
+- **A better measure of "understanding"**: Instead of just asking "does the model pass a test?", we'd ask "does it actually understand context and relationships?"
 
-# Wikisource WW1 primary sources
-python scripts/fetch_wikisource.py --output data/wikisource_corpus.jsonl
+This could become a standard benchmark for evaluating frontier models — a way to ask not just "is this model smart?" but "does this model actually know what it claims to know?"
 
-# Project Gutenberg WW1 books
-python scripts/fetch_gutenberg.py --output data/gutenberg_corpus.jsonl
-```
+---
 
-### Cleaning, splitting, redacting
+## The Technical Side (For Those Who Want It)
 
-```bash
-# Combine all *_clean.jsonl into all_clean.jsonl (deduplicates by pageid)
-python scripts/combiner.py
+**The model**: We use DistilBERT, a lighter version of BERT (~66 million parameters). It's fast to train and good at understanding context without being enormous.
 
-# Strip wikitext markup (run per source corpus)
-python scripts/janitor.py --input <corpus>.jsonl --output data/<corpus>_clean.jsonl
+**The data**: ~4,300 World War I articles from Wikipedia, with careful curation to remove noisy redactions (numbers, malformed tokens, etc.). We split 80/20 into training and test sets.
 
-# Split 80/20 train/test (seed=42)
-python scripts/splitter.py
+**The training**: We show the model passages where some named entities are hidden behind `[MASK]` tokens. It learns to predict what was hidden by looking at the surrounding words and the hint (e.g., "this is a person").
 
-# Redact
-python scripts/redactor.py --input data/train_clean.jsonl --output data/train_redacted.jsonl --mode train
-python scripts/redactor.py --input data/test_clean.jsonl  --output data/test_redacted.jsonl  --mode test
-```
+**Two evaluation modes**:
+- **Constrained**: The model picks from a list of known entities. More realistic, gives better numbers.
+- **Free**: The model generates any name. Shows what it actually learned, usually harder.
 
-### Train and evaluate
+---
+
+## How to Use This
+
+### Quick Start
 
 ```bash
+# Install dependencies
+uv sync
+python -m spacy download en_core_web_sm
+
+# Data pipeline (if starting from scratch)
+uv run python scripts/combiner.py          # Combine sources
+uv run python scripts/splitter.py          # 80/20 split
+uv run python scripts/redactor.py --input data/train_clean.jsonl --output data/train_redacted.jsonl --mode train
+uv run python scripts/redactor.py --input data/test_clean.jsonl --output data/test_redacted.jsonl --mode test
+
+# Train the model
 uv run train
+
+# Evaluate
 uv run evaluate
 ```
 
+### Data
+
+Raw corpora live in `data/`:
+- `wwi_extended.jsonl` — ~4,300 Wikipedia articles, cleaned plaintext
+- `train_redacted.jsonl` — training set with redacted entities
+- `test_redacted.jsonl` — test set for evaluation
+
+Each redaction record contains:
+- The article title and text
+- A list of redactions: `{original: "Serbia", label: "GPE", start: 1107, end: 1119}`
+
+### Model Outputs
+
+Trained models save to `models/`:
+- `models/current/` — latest training run
+- `models/final/` — stable checkpoint
+
+Each contains the full model weights and tokenizer.
+
 ---
 
-## Setup
+## Key Files
 
-Requires Python 3.11 and [uv](https://github.com/astral-sh/uv).
-
-```bash
-uv sync
-python -m spacy download en_core_web_sm
-```
-
----
-
-## Data
-
-| File | Description |
+| File | What It Does |
 |---|---|
-| `data/wwi_portal_corpus.jsonl` | Raw wikitext, ~2093 Wikipedia WWI articles |
-| `data/wikisource_corpus.jsonl` | Raw wikitext, 1043 Wikisource WW1 documents |
-| `data/gutenberg_corpus.jsonl` | Raw text, 317 Project Gutenberg WW1 books |
-| `data/all_clean.jsonl` | Combined, deduplicated plaintext (540 articles) |
-| `data/train_clean.jsonl` | 432 articles (80% split) |
-| `data/test_clean.jsonl` | 108 articles (20% split) |
-| `data/train_redacted.jsonl` | Training set — `[REDACTED:LABEL]` tokens + annotations |
-| `data/test_redacted.jsonl` | Test set — `[REDACTED:LABEL]` tokens + annotations |
-
-### JSONL schema (`*_redacted.jsonl`)
-
-```json
-{
-  "pageid": 4764461,
-  "title": "World War I",
-  "text": "...Austria-Hungary blamed [REDACTED:GPE], and declared war...",
-  "redactions": [
-    {"start": 1107, "end": 1119, "label": "GPE", "original": "Serbia"}
-  ]
-}
-```
-
-`start`/`end` are character offsets in the redacted text.
+| `src/ner_recovery/train.py` | Fine-tunes DistilBERT on redaction task |
+| `src/ner_recovery/eval.py` | Evaluates model in constrained and free modes |
+| `src/ner_recovery/curator.py` | Filters noisy redactions for clean training |
+| `src/ner_recovery/oov_analysis.py` | Reports which test entities are missing from training |
+| `scripts/redactor.py` | Uses spaCy to redact entities in text |
 
 ---
 
-## Redaction Modes
+## The Summit: What We're Aiming For
 
-| Mode | Rate | Sampling |
-|---|---|---|
-| `train` (weighted) | 10–20% of entities, min 1 | Weighted by inverse accuracy — hard labels sampled more |
-| `test` (uniform) | 2–5% of entities, min 1 | Uniform random |
+If this work succeeds, it becomes a tool for understanding what language models really know. Instead of asking "is this model intelligent?", we ask "does this model understand the structure of history, geography, and human relationships?" That's a much harder question, and a much more useful one.
 
-Seed fixed at 42 for reproducibility.
+Imagine a future where every large language model comes with an "understanding score" — not just accuracy on a benchmark, but a measure of how well it genuinely knows entities, facts, and their relationships. This project is a step toward that.
 
----
-
-## Model
-
-- **Architecture**: `distilbert-base-uncased` (~66M params), Masked Language Model
-- **Task framing**: `[REDACTED:LABEL]` tokens replaced by N `[MASK]` tokens (N = subword count of original entity); model predicts original tokens
-- **Training examples**: grouped redactions in 2000-char windows, up to 512 tokens per example
-- **Hyperparameters**: 3 epochs, batch size 8, lr 5e-5, AdamW + linear warmup (50 steps)
+We're not there yet. But the road is clear, and the question is worth asking.
 
 ---
 
-## Reference Papers
+## References
 
-Stored in `refs/`:
+Key papers we're building on:
 
-- Engram (conditional memory / constrained lookup): `2601.07372v1.pdf` — via Maryam ([@analyticsCamp](https://www.youtube.com/@analyticsCamp))
-- BERT: `bert_1810.04805.pdf`
-- Blank language models: `blank_lm_2002.03079.pdf`
-- Fill-in-the-blank: `fill_blanks_2005.05339.pdf`
-- MLM inductive bias: `mlm_inductive_bias_2104.05694.pdf`
-- Redaction & privacy: `redaction_privacy_2410.07772.pdf`
-- Hallucination surveys: `hallucination_*.pdf`
-- UniFact: `unifact_2512.02772.pdf`
+- **Engram**: Conditional lookup + constrained decoding for factual generation
+- **BERT**: The foundation for masked language model pretraining
+- **Hallucination research**: Understanding when and why models make things up
+- **Entity understanding**: How well do models actually track named entities?
+
+Full references in `refs/`.
+
+---
+
+## Questions?
+
+This is research in progress. If you want to understand more or contribute, reach out.
