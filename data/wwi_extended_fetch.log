@@ -27242,3 +27242,2077 @@ KeyboardInterrupt
 All done: Wed Apr 22 14:17:44 IST 2026
 Total articles in data/wwi_extended.jsonl:     5211
 ========================================
+========================================
+fetch_wwi_extended.sh started: Wed Apr 22 16:38:03 IST 2026
+Output: data/wwi_extended.jsonl
+Total categories: 41
+Resuming from: 13
+========================================
+  skip [1/41] Category:Assassination of Archduke Franz Ferdinand
+  skip [2/41] Category:July Crisis
+  skip [3/41] Category:Black Hand (Serbia)
+  skip [4/41] Category:Balkan Wars
+  skip [5/41] Category:Pan-Slavism
+  skip [6/41] Category:Young Bosnia
+  skip [7/41] Category:Politicians of the German Empire
+  skip [8/41] Category:Austria-Hungary politicians
+  skip [9/41] Category:Young Turks
+  skip [10/41] Category:Committee of Union and Progress
+  skip [11/41] Category:Bulgarian World War I military personnel
+  skip [12/41] Category:Ottoman Empire in World War I
+
+[13/41] 16:38:03 — Category:Partitioning of the Ottoman Empire
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:Partitioning of the Ottoman Empire
+  ↳ Category:Partitioning of the Ottoman Empire
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[14/41] 16:38:06 — Category:Arab Revolt
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:Arab Revolt
+  ↳ Category:Arab Revolt
+    ↳ Category:Arab independence activists
+    ↳ Category:Battles of the Arab Revolt
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 19, in _api_get
+    r = requests.get(API, params=params, headers=HEADERS, timeout=30)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/requests/sessions.py", line 592, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/requests/sessions.py", line 706, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/requests/adapters.py", line 645, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/.venv/lib/python3.11/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+KeyboardInterrupt
+  WARNING: fetcher exited non-zero for: Category:Arab Revolt
+
+[15/41] 16:38:13 — Category:Russian Empire politicians
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:Russian Empire politicians
+  ↳ Category:Russian Empire politicians
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[16/41] 16:38:15 — Category:French Third Republic politicians
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:French Third Republic politicians
+  ↳ Category:French Third Republic politicians
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[17/41] 16:38:18 — Category:Liberal Party (UK) politicians
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:Liberal Party (UK) politicians
+  ↳ Category:Liberal Party (UK) politicians
+    ↳ Category:Scottish Liberal Party politicians
+    ↳ Category:Chairs of the Liberal Party (UK)
+    ↳ Category:Liberal Party (UK) councillors
+    ↳ Category:Leaders of the Liberal Party (UK)
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 81, in get_all_members
+    time.sleep(0.05)
+KeyboardInterrupt
+  WARNING: fetcher exited non-zero for: Category:Liberal Party (UK) politicians
+
+[18/41] 16:38:42 — Category:Conservative Party (UK) politicians 1910–1945
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:Conservative Party (UK) politicians 1910–1945
+  ↳ Category:Conservative Party (UK) politicians 1910–1945
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[19/41] 16:38:45 — Category:World War I commanders
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:World War I commanders
+  ↳ Category:World War I commanders
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[20/41] 16:38:47 — Category:World War I military personnel by country
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:World War I military personnel by country
+  ↳ Category:World War I military personnel by country
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[21/41] 16:38:50 — Category:Wilson administration
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:Wilson administration
+  ↳ Category:Wilson administration
+
+Found 0 new articles to fetch
+Done → data/wwi_extended.jsonl
+
+[22/41] 16:38:54 — Category:United States in World War I
+Skipping 4890 already-fetched titles
+Walking category tree from: Category:United States in World War I
+  ↳ Category:United States in World War I
+    ↳ Category:United States in World War I-related lists
+    ↳ Category:American people of World War I
+    ↳ Category:Aftermath of World War I in the United States
+    ↳ Category:Agencies of the United States government during World War I
+    ↳ Category:Comité des Étudiants Américains de l'École des Beaux-Arts Paris
+    ↳ Category:United States home front during World War I
+    ↳ Category:Military history of the United States during World War I
+    ↳ Category:Military operations of World War I involving the United States
+      ↳ Category:African Americans in World War I
+      ↳ Category:American women in World War I
+      ↳ Category:American anti–World War I activists
+      ↳ Category:American casualties of World War I
+      ↳ Category:American recipients of the Croix de Guerre 1914–1918 (France)
+      ↳ Category:American Field Service personnel of World War I
+      ↳ Category:American military personnel of World War I
+      ↳ Category:American World War I poets
+      ↳ Category:World War I spies for the United States
+      ↳ Category:United States government officials of World War I
+      ↳ Category:American war correspondents of World War I
+      ↳ Category:World War I memorials in the United States
+      ↳ Category:World War I museums in the United States
+      ↳ Category:American Relief Administration
+      ↳ Category:Red Summer
+      ↳ Category:American involvement in the Russian Civil War
+      ↳ Category:Films set on the United States home front during World War I
+      ↳ Category:United States Railroad Administration
+      ↳ Category:World War I military equipment of the United States
+      ↳ Category:Lafayette Escadrille
+      ↳ Category:Military units and formations of the United States in World War I
+      ↳ Category:World War I ships of the United States
+      ↳ Category:World War I sites of the United States
+      ↳ Category:United States war crimes in World War I
+      ↳ Category:World War I sites in the United States
+      ↳ Category:Battles of World War I involving the United States
+
+Found 1533 new articles to fetch
+  [1/1533] United States in World War I
+  [2/1533] American entry into World War I
+  [3/1533] The Steamship Appam
+  [4/1533] Camp Guild
+  [5/1533] Committee of American Students of the School of Beaux-Arts, Paris
+  [6/1533] Emergency Fleet Corporation
+  [7/1533] German bombing of Monrovia
+  [8/1533] Gore–McLemore resolutions
+  [9/1533] Hindu–German Conspiracy Trial
+  [10/1533] Knox–Porter Resolution
+  [11/1533] Library War Service
+  [12/1533] Mallows Bay
+  [13/1533] Merchants of death
+  [14/1533] Nye Committee
+  [15/1533] P.M.G.O. Form 1
+  [16/1533] Rouge Bouquet
+  [17/1533] Selective Draft Law Cases
+  [18/1533] Selective Service Act of 1917
+  [19/1533] The Spirit of '76 (1917 film)
+  [20/1533] Spirit of 1917
+  [21/1533] Thrasher incident
+  [22/1533] United States Army enlisted rank insignia of World War I
+  [23/1533] United States declaration of war on Austria-Hungary
+  [24/1533] United States declaration of war on Germany (1917)
+  [25/1533] United States Food Administration
+  [26/1533] 1915 Vanceboro international bridge bombing
+  [27/1533] Western Front (World War I)
+  [28/1533] The Yanks Are Coming (1963 film)
+  [29/1533] List of aerial victories of David Endicott Putnam
+  [30/1533] List of American aero squadrons
+  [31/1533] List of American construction companies in World War I
+  [32/1533] Deadliest single days of World War I
+  [33/1533] General Pershing WWI casualty list
+  [34/1533] List of formations of the United States Army during World War I
+  [35/1533] List of Medal of Honor recipients for World War I
+  [36/1533] United States service medals of the world wars
+  [37/1533] United States campaigns in World War I
+  [38/1533] Puerto Ricans in World War I
+  [39/1533] Ursula Tibbels Auer
+  [40/1533] Walter Van Rensselaer Berry
+  [41/1533] John Calvin Broomfield
+  [42/1533] Roland Burrage Dixon
+  [43/1533] Michael F. Farley
+  [44/1533] Robert Freeman (pastor)
+  [45/1533] Newell Dwight Hillis
+  [46/1533] Frederick Krafft
+  [47/1533] John Howard Lawson
+  [48/1533] Titus Lowe
+  [49/1533] Gordon P. Merriam
+  [50/1533] J. P. Morgan Jr.
+  [51/1533] William Henry Poole
+  [52/1533] Louis Livingston Seaman
+  [53/1533] R. A. Torrey
+  [54/1533] Charles H. Tuttle
+  [55/1533] Dudley Wolfe
+  [56/1533] Adjusted Compensation Payment Act
+  [57/1533] American Gold Star Mothers
+  [58/1533] American Legion
+  [59/1533] Society of American Military Engineers
+  [60/1533] University of Arkansas at Little Rock
+  [61/1533] Assistance League
+  [62/1533] Bonus Army
+  [63/1533] Effect of World War I on children in the United States
+  [64/1533] Disabled American Veterans
+  [65/1533] Emergency Tariff of 1921
+  [66/1533] Forty and Eight
+  [67/1533] Foreign policy of Herbert Hoover
+  [68/1533] Hoover Moratorium
+  [69/1533] King–Crane Commission
+  [70/1533] Lynching of Wilbur Little
+  [71/1533] Lynching of African-American veterans after World War I
+  [72/1533] Mellon–Berenger Agreement
+  [73/1533] Moina Michael
+  [74/1533] Military Order of the Cootie
+  [75/1533] Military Order of the World Wars
+  [76/1533] Recession of 1920–1921
+  [77/1533] Sons of The American Legion
+  [78/1533] Treaty of Friendship, Commerce and Consular Relations between Germany and the United States of America
+  [79/1533] U.S.–German Peace Treaty (1921)
+  [80/1533] Veterans Day
+  [81/1533] Wilsonian Armenia
+  [82/1533] World War Adjusted Compensation Act
+  [83/1533] World War Foreign Debts Commission Act
+  [84/1533] John Allan Wyeth (poet)
+  [85/1533] Young Plan
+  [86/1533] National War Labor Board (1918–1919)
+  [87/1533] War Labor Policies Board
+  [88/1533] United States home front during World War I
+  [89/1533] 3rd Liberty Loan Act
+  [90/1533] 152d Depot Brigade (United States)
+  [91/1533] 162d Depot Brigade (United States)
+  [92/1533] 1917 Chester race riot
+  [93/1533] 1917 State of the Union Address
+  [94/1533] 1917 United States gubernatorial elections
+  [95/1533] 1917 United States House of Representatives elections
+  [96/1533] 1918 State of the Union Address
+  [97/1533] 1918 United States elections
+  [98/1533] 1918 United States gubernatorial elections
+  [99/1533] 1918 United States House of Representatives elections
+  [100/1533] 1918 United States Senate elections
+  [101/1533] Abrams v. United States
+  [102/1533] America First Association of Minnesota
+  [103/1533] American Alliance for Labor and Democracy
+  [104/1533] American Defense Society
+  [105/1533] American Protective League
+  [106/1533] Babel Proclamation
+  [107/1533] Balfour Mission
+  [108/1533] Battle of Ambos Nogales
+  [109/1533] Bisbee Deportation
+  [110/1533] Black Tom explosion
+  [111/1533] Boy Spies of America
+  [112/1533] Brite Ranch raid
+  [113/1533] Camp Harry J. Jones
+  [114/1533] Camp Kearny
+  [115/1533] Camp Leach
+  [116/1533] Citizens' Military Training Camp
+  [117/1533] Cloquet Fire
+  [118/1533] Committee on Public Information
+  [119/1533] Council of National Defense
+  [120/1533] Debs v. United States
+  [121/1533] Theodore C. Diers
+  [122/1533] East St. Louis massacre
+  [123/1533] Eddystone explosion
+  [124/1533] Espionage Act of 1917
+  [125/1533] Fort Logan H. Roots
+  [126/1533] Four Minute Men
+  [127/1533] Frohwerk v. United States
+  [128/1533] German prisoners of war in the United States
+  [129/1533] Great Phenol Plot
+  [130/1533] Green Corn Rebellion
+  [131/1533] Hammond Circus train wreck
+  [132/1533] Hartsville Oil Mill v. United States
+  [133/1533] Hostess House
+  [134/1533] Houston riot of 1917
+  [135/1533] Hyphenated American
+  [136/1533] Internment of German Americans
+  [137/1533] Iowa State Council for Defense
+  [138/1533] Jackson Barracks
+  [139/1533] Kingsland explosion
+  [140/1533] Lynching of Olli Kinkkonen
+  [141/1533] Knights of Liberty (vigilante group)
+  [142/1533] Liberty bond
+  [143/1533] List of German-sponsored acts of terrorism during World War I
+  [144/1533] Loyal Legion of Loggers and Lumbermen
+  [145/1533] Naval Training Station Marblehead
+  [146/1533] John T. Meints
+  [147/1533] Merchant Shipbuilding Corporation
+  [148/1533] Meyer v. Nebraska
+  [149/1533] Minnesota Commission of Public Safety
+  [150/1533] National Security League
+  [151/1533] New Negro
+  [152/1533] Attack on Orleans
+  [153/1533] People's Council of America for Democracy and the Terms of Peace
+  [154/1533] Lynching of Ell Persons
+  [155/1533] Philadelphia Liberty Loans Parade
+  [156/1533] Porvenir massacre (1918)
+  [157/1533] Power's Cabin shootout
+  [158/1533] Preparedness Movement
+  [159/1533] Railroads' War Board
+  [160/1533] John R. Rathom
+  [161/1533] Robinson Maneuver Training Center
+  [162/1533] Rochambeau bomb plot
+  [163/1533] Schenck v. United States
+  [164/1533] Silent Parade
+  [165/1533] Spruce Production Division
+  [166/1533] Submarine Boat Company
+  [167/1533] Sugar Equalization Board
+  [168/1533] T. A. Gillespie Company Shell Loading Plant explosion
+  [169/1533] Tulsa Outrage
+  [170/1533] United States Fuel Administration
+  [171/1533] United States Guards (1917)
+  [172/1533] United States Railroad Administration
+  [173/1533] Wake Up America Day
+  [174/1533] War Industries Board
+  [175/1533] Woman's Land Army of America
+  [176/1533] United States Army Air Service
+  [177/1533] Battle of Bear Valley
+  [178/1533] Commission on Training Camp Activities
+  [179/1533] Fort Omaha
+  [180/1533] Military history of Jewish Americans
+  [181/1533] Military Board of Allied Supply
+  [182/1533] Naval Consulting Board
+  [183/1533] Omaha Quartermaster Depot Historic District
+  [184/1533] Railway operations, American Expeditionary Forces
+  [185/1533] Services of Supply, American Expeditionary Forces
+  [186/1533] Stevedore operations, American Expeditionary Forces
+  [187/1533] Sergeant Stubby
+  [188/1533] 92nd Infantry Division (United States)
+  [189/1533] 93rd Infantry Division (United States)
+  [190/1533] 366th Infantry Regiment (United States)
+  [191/1533] 368th Infantry Regiment (United States)
+  [192/1533] 369th Infantry Regiment (United States)
+  [193/1533] 370th Infantry Regiment (United States)
+  [194/1533] 371st Infantry Regiment (United States)
+  [195/1533] 372nd Infantry Regiment (United States)
+  [196/1533] Cleve Abbott
+  [197/1533] Clarence Van Allen
+  [198/1533] William T. Amiger
+  [199/1533] George Washington Antione
+  [200/1533] Rufus Herve Bacote
+  [201/1533] Everett Russell Bailey
+  [202/1533] Dana Olden Baldwin
+  [203/1533] Claudius Ballard
+  [204/1533] Urbane F. Bass
+  [205/1533] Edward Willard Bates
+  [206/1533] Arthur John Booker
+  [207/1533] William John Henry Booker
+  [208/1533] Frank E. Boston
+  [209/1533] Joseph Cyrus Bradfield
+  [210/1533] Horace Signor Brannon
+  [211/1533] Henry L. Brown
+  [212/1533] Vanderbilt Brown
+  [213/1533] Eugene Bullard
+  [214/1533] Alan T. Busby
+  [215/1533] Henry Alvin Cameron
+  [216/1533] Circle For Negro War Relief
+  [217/1533] Lorenza Cobb
+  [218/1533] Elbert Frank Cox
+  [219/1533] Victor Daly
+  [220/1533] Benjamin O. Davis Sr.
+  [221/1533] William L. Dawson (politician)
+  [222/1533] Edward Dugger
+  [223/1533] Otis B. Duncan
+  [224/1533] James Reese Europe
+  [225/1533] Aaron R. Fisher
+  [226/1533] Susan Elizabeth Frazier
+  [227/1533] Charles Herbert Garvin
+  [228/1533] Bert Gholston
+  [229/1533] Lloyd Hall
+  [230/1533] Moses Hardy
+  [231/1533] Abram Lincoln Harris
+  [232/1533] Billy Higgins (vaudeville)
+  [233/1533] Clarence Sumner Janifer
+  [234/1533] Malvin Gray Johnson
+  [235/1533] Henry Johnson (World War I soldier)
+  [236/1533] Ted Kimbro
+  [237/1533] Walter Loving
+  [238/1533] Jimmie Lyons
+  [239/1533] Daniel Mack
+  [240/1533] Oscar Mack
+  [241/1533] Anthony Mahoney
+  [242/1533] Thomas McKeller
+  [243/1533] Wayne Miner
+  [244/1533] James Alexander Owen
+  [245/1533] Lawrence A. Oxley
+  [246/1533] Spot Poles
+  [247/1533] James Maxie Ponder
+  [248/1533] Randolph Prim
+  [249/1533] O'Neal Pullen
+  [250/1533] Howard Queen
+  [251/1533] Homer B. Roberts
+  [252/1533] Needham Roberts
+  [253/1533] Branch Russell
+  [254/1533] Bob Scanlon (boxer)
+  [255/1533] Emmett Jay Scott
+  [256/1533] Noble Sissle
+  [257/1533] Albert Alexander Smith
+  [258/1533] Lamar Smith (activist)
+  [259/1533] Aileen Cole Stewart
+  [260/1533] Freddie Stowers
+  [261/1533] Dox Thrash
+  [262/1533] Ralph Waldo Tyler
+  [263/1533] Alonzo Watson
+  [264/1533] Pearl Webster
+  [265/1533] Frank Wickware
+  [266/1533] Spencer Williams Jr.
+  [267/1533] Christopher C. Wimbish
+  [268/1533] American women in World War I
+  [269/1533] Women's Reserve Camouflage Corps
+  [270/1533] Ednah Robinson Aiken
+  [271/1533] Flora Aldrich
+  [272/1533] Elizabeth Dobson Altemus
+  [273/1533] American Committee for Devastated France
+  [274/1533] Mary Vail Andress
+  [275/1533] Mary Noel Arrowsmith
+  [276/1533] Anne Azgapetian
+  [277/1533] Constance Balfour
+  [278/1533] Nellie Barsness
+  [279/1533] Vera Barstow
+  [280/1533] Caroline Gardner Bartlett
+  [281/1533] Vashti Bartlett
+  [282/1533] Othilia Carroll Beals
+  [283/1533] Minnie Mason Beebe
+  [284/1533] May Beegle
+  [285/1533] Harriet Morehead Berry
+  [286/1533] Sara Biala
+  [287/1533] Kathleen Hart Bibb
+  [288/1533] Edith Bideau
+  [289/1533] Margaret Day Blake
+  [290/1533] Florence A. Blanchfield
+  [291/1533] Katherine Russell Bleecker
+  [292/1533] Katharine Burr Blodgett
+  [293/1533] Mabel Thorp Boardman
+  [294/1533] Mary Borden
+  [295/1533] Diana Bourbon
+  [296/1533] Etnah Rochon Boutte
+  [297/1533] Esther Dunshee Bower
+  [298/1533] Alida Bowler
+  [299/1533] Josephine Beatrice Bowman
+  [300/1533] Frances Sage Bradley
+  [301/1533] Genevieve Garvan Brady
+  [302/1533] Mary Carson Breckinridge
+  [303/1533] Esto Bates Broughton
+  [304/1533] Margaret Brown
+  [305/1533] Mary Louise Brown
+  [306/1533] Mary deGarmo Bryan
+  [307/1533] May Buckley
+  [308/1533] Marion L. Bugbee
+  [309/1533] Clara Burdette
+  [310/1533] Garreta Busey
+  [311/1533] Hope Butler
+  [312/1533] Elinor Byrns
+  [313/1533] Reba Cameron
+  [314/1533] Mary Dranga Campbell
+  [315/1533] Helen Churchill Candee
+  [316/1533] Beatrice Morrow Cannady
+  [317/1533] Blanche Hecht Consolvo Cariaggi
+  [318/1533] Caroline Sanford Finley
+  [319/1533] Alice Griffith Carr
+  [320/1533] Jessie Carson
+  [321/1533] Hazel Carter (writer)
+  [322/1533] Alice A. Casneau
+  [323/1533] Cora Sutton Castle
+  [324/1533] Beatrice Chanler
+  [325/1533] Placida Gardner Chesley
+  [326/1533] Bertha Cushing Child
+  [327/1533] Molly Childers
+  [328/1533] Eleonora de Cisneros
+  [329/1533] Mazie E. Clemens
+  [330/1533] Lillian Exum Clement
+  [331/1533] Florence Van Leer Earle Coates
+  [332/1533] Emma Conley
+  [333/1533] Mary Elizabeth Cook
+  [334/1533] Marjorie Hulsizer Copher
+  [335/1533] Marion Cothren
+  [336/1533] Bessie Boies Cotton
+  [337/1533] Sara M. Cox
+  [338/1533] Marion G. Crandell
+  [339/1533] Mary M. Crawford
+  [340/1533] Gladys Cromwell
+  [341/1533] Fanniebelle Curtis
+  [342/1533] Juliet Clannon Cushing
+  [343/1533] Mabel Potter Daggett
+  [344/1533] Alice Daly
+  [345/1533] Sue S. Dauser
+  [346/1533] Blanche Dayne
+  [347/1533] Natalie de Bogory
+  [348/1533] Mary O'Donnell de Garmo
+  [349/1533] Elsie de Wolfe
+  [350/1533] Margaret Deland
+  [351/1533] Frances W. Delehanty
+  [352/1533] Edna de Lima
+  [353/1533] Faustine Dennis
+  [354/1533] Ethel Roosevelt Derby
+  [355/1533] Lydia Allen DeVilbiss
+  [356/1533] Julia Lester Dillon
+  [357/1533] Saba Doak
+  [358/1533] Pauline Donnan
+  [359/1533] Isma Dooly
+  [360/1533] Nina Larrey Duryea
+  [361/1533] Georgiana Dvorak-Theobald
+  [362/1533] Eleanor Franklin Egan
+  [363/1533] Hettie Belle Ege
+  [364/1533] Maxine Elliott
+  [365/1533] Cora Elm
+  [366/1533] Rachael Robinson Elmer
+  [367/1533] Gertrude Sumner Ely
+  [368/1533] Katherine Emmet
+  [369/1533] Mae Shumway Enderly
+  [370/1533] Sarah A. Evans
+  [371/1533] Helen Fairchild
+  [372/1533] Ruth Stanley Farnam
+  [373/1533] Amparito Farrar
+  [374/1533] Elsie Ferguson
+  [375/1533] Sarah Collins Fernandis
+  [376/1533] Anna L. Fisher
+  [377/1533] Welthy Honsinger Fisher
+  [378/1533] Mary Fitzbutler Waring
+  [379/1533] Alice Fitzgerald
+  [380/1533] Lena Guilbert Ford
+  [381/1533] Marie K. Formad
+  [382/1533] Elizabeth Gordon Fox
+  [383/1533] Bessie Bartlett Frankel
+  [384/1533] Elizebeth Smith Friedman
+  [385/1533] Ernestine Friedmann
+  [386/1533] Marie Frugone
+  [387/1533] Helen Newell Garfield
+  [388/1533] Grace Gassette
+  [389/1533] Yetta Dorothea Geffen
+  [390/1533] Mayme Gehrue
+  [391/1533] Elva A. George
+  [392/1533] Mabel Farrington Gifford
+  [393/1533] Thelma Given
+  [394/1533] Mary E. Gladwin
+  [395/1533] Augusta Glosé
+  [396/1533] Madeleine Ives Goddard
+  [397/1533] Gertrude Gogin
+  [398/1533] Abbe Carter Goodloe
+  [399/1533] Minnie Goodnow
+  [400/1533] Annie Warburton Goodrich
+  [401/1533] Edna Goodrich
+  [402/1533] Lulu Grace Graves
+  [403/1533] Amelia Greenwald
+  [404/1533] Elinor D. Gregg
+  [405/1533] Caroline Henderson Griffiths
+  [406/1533] Ethel A. Grosscup
+  [407/1533] Frances Gulick
+  [408/1533] Victoria Clay Haley
+  [409/1533] Carrie Hall
+  [410/1533] Florence Jaffray Harriman
+  [411/1533] Marguerite Harrison
+  [412/1533] Sophie Chantal Hart
+  [413/1533] Esther Hasson
+  [414/1533] Harriet Boyd Hawes
+  [415/1533] Helen Scott Hay
+  [416/1533] Grace Hazard
+  [417/1533] Myrtle Hazard
+  [418/1533] Elizabeth Lee Hazen
+  [419/1533] Millicent Hearst
+  [420/1533] Julia C. Henderson
+  [421/1533] Anna E. Hendley
+  [422/1533] Lucy Ross Henson
+  [423/1533] Katrina Hertzer
+  [424/1533] Lenah Higbee
+  [425/1533] Myn Hoffman
+  [426/1533] Frances M. Hollingshead
+  [427/1533] Winifred Holt
+  [428/1533] Leila Holterhoff
+  [429/1533] Lou Henry Hoover
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Charlotte Everett Hopkins: API failed after 3 retries: {'action': 'query', 'titles': 'Charlotte Everett Hopkins', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Adelia M. Hoyt: API failed after 3 retries: {'action': 'query', 'titles': 'Adelia M. Hoyt', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Julia Hoyt: API failed after 3 retries: {'action': 'query', 'titles': 'Julia Hoyt', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Frances Wilson Huard: API failed after 3 retries: {'action': 'query', 'titles': 'Frances Wilson Huard', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Hannah Clothier Hull: API failed after 3 retries: {'action': 'query', 'titles': 'Hannah Clothier Hull', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Ida Brooks Hunt: API failed after 3 retries: {'action': 'query', 'titles': 'Ida Brooks Hunt', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Louise Hurrell: API failed after 3 retries: {'action': 'query', 'titles': 'Louise Hurrell', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Isa Maud Ilsen: API failed after 3 retries: {'action': 'query', 'titles': 'Isa Maud Ilsen', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Elsie Janis: API failed after 3 retries: {'action': 'query', 'titles': 'Elsie Janis', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Florence Merriam Johnson: API failed after 3 retries: {'action': 'query', 'titles': 'Florence Merriam Johnson', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Opha May Johnson: API failed after 3 retries: {'action': 'query', 'titles': 'Opha May Johnson', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Violet A. Johnson: API failed after 3 retries: {'action': 'query', 'titles': 'Violet A. Johnson', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Frances Jolliffe: API failed after 3 retries: {'action': 'query', 'titles': 'Frances Jolliffe', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Kate Breckenridge Karpeles: API failed after 3 retries: {'action': 'query', 'titles': 'Kate Breckenridge Karpeles', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Anita King: API failed after 3 retries: {'action': 'query', 'titles': 'Anita King', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Myra Kingman: API failed after 3 retries: {'action': 'query', 'titles': 'Myra Kingman', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Mary Holland Kinkaid: API failed after 3 retries: {'action': 'query', 'titles': 'Mary Holland Kinkaid', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Dita Hopkins Kinney: API failed after 3 retries: {'action': 'query', 'titles': 'Dita Hopkins Kinney', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Mabel Hyde Kittredge: API failed after 3 retries: {'action': 'query', 'titles': 'Mabel Hyde Kittredge', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Rebekah Bettelheim Kohut: API failed after 3 retries: {'action': 'query', 'titles': 'Rebekah Bettelheim Kohut', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Ada Turner Kurtz: API failed after 3 retries: {'action': 'query', 'titles': 'Ada Turner Kurtz', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Ellen La Motte: API failed after 3 retries: {'action': 'query', 'titles': 'Ellen La Motte', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Anna Coleman Ladd: API failed after 3 retries: {'action': 'query', 'titles': 'Anna Coleman Ladd', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Nathalie Schenck Laimbeer: API failed after 3 retries: {'action': 'query', 'titles': 'Nathalie Schenck Laimbeer', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Isabel Stevens Lathrop: API failed after 3 retries: {'action': 'query', 'titles': 'Isabel Stevens Lathrop', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Harriet L. Leete: API failed after 3 retries: {'action': 'query', 'titles': 'Harriet L. Leete', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Nell Battle Lewis: API failed after 3 retries: {'action': 'query', 'titles': 'Nell Battle Lewis', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Marcella Lindh: API failed after 3 retries: {'action': 'query', 'titles': 'Marcella Lindh', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Beth Lydy: API failed after 3 retries: {'action': 'query', 'titles': 'Beth Lydy', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Pauline Arnoux MacArthur: API failed after 3 retries: {'action': 'query', 'titles': 'Pauline Arnoux MacArthur', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Beatrice MacCue: API failed after 3 retries: {'action': 'query', 'titles': 'Beatrice MacCue', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Idael Makeever: API failed after 3 retries: {'action': 'query', 'titles': 'Idael Makeever', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Katherine Manion: API failed after 3 retries: {'action': 'query', 'titles': 'Katherine Manion', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Bertha Mann: API failed after 3 retries: {'action': 'query', 'titles': 'Bertha Mann', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Jennie Mannheimer: API failed after 3 retries: {'action': 'query', 'titles': 'Jennie Mannheimer', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Frances Marion: API failed after 3 retries: {'action': 'query', 'titles': 'Frances Marion', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Linda K. Meirs: API failed after 3 retries: {'action': 'query', 'titles': 'Linda K. Meirs', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Inez Milholland: API failed after 3 retries: {'action': 'query', 'titles': 'Inez Milholland', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Vida Milholland: API failed after 3 retries: {'action': 'query', 'titles': 'Vida Milholland', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Bernetta Adams Miller: API failed after 3 retries: {'action': 'query', 'titles': 'Bernetta Adams Miller', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Lucy Minnigerode: API failed after 3 retries: {'action': 'query', 'titles': 'Lucy Minnigerode', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Anna V. S. Mitchell: API failed after 3 retries: {'action': 'query', 'titles': 'Anna V. S. Mitchell', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Matilde Moisant: API failed after 3 retries: {'action': 'query', 'titles': 'Matilde Moisant', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Eva Perry Moore: API failed after 3 retries: {'action': 'query', 'titles': 'Eva Perry Moore', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Mary Agnes Moore: API failed after 3 retries: {'action': 'query', 'titles': 'Mary Agnes Moore', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Anne Morgan (philanthropist): API failed after 3 retries: {'action': 'query', 'titles': 'Anne Morgan (philanthropist)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Ruth Morgan: API failed after 3 retries: {'action': 'query', 'titles': 'Ruth Morgan', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Agnes Thomas Morris: API failed after 3 retries: {'action': 'query', 'titles': 'Agnes Thomas Morris', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Margaret Shove Morriss: API failed after 3 retries: {'action': 'query', 'titles': 'Margaret Shove Morriss', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Rosalie Slaughter Morton: API failed after 3 retries: {'action': 'query', 'titles': 'Rosalie Slaughter Morton', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Devora Nadworney: API failed after 3 retries: {'action': 'query', 'titles': 'Devora Nadworney', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP National League for Women's Service: API failed after 3 retries: {'action': 'query', 'titles': "National League for Women's Service", 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Mary Lawson Neff: API failed after 3 retries: {'action': 'query', 'titles': 'Mary Lawson Neff', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Volara Romanza Nelson: API failed after 3 retries: {'action': 'query', 'titles': 'Volara Romanza Nelson', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP A. Evelyn Newman: API failed after 3 retries: {'action': 'query', 'titles': 'A. Evelyn Newman', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Vida Newsom: API failed after 3 retries: {'action': 'query', 'titles': 'Vida Newsom', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Elsie Eaton Newton: API failed after 3 retries: {'action': 'query', 'titles': 'Elsie Eaton Newton', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Virginia Norden: API failed after 3 retries: {'action': 'query', 'titles': 'Virginia Norden', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Clara Noyes: API failed after 3 retries: {'action': 'query', 'titles': 'Clara Noyes', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Claribel Nye: API failed after 3 retries: {'action': 'query', 'titles': 'Claribel Nye', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Katherine Olmsted: API failed after 3 retries: {'action': 'query', 'titles': 'Katherine Olmsted', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Mildred Scott Olmsted: API failed after 3 retries: {'action': 'query', 'titles': 'Mildred Scott Olmsted', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+  [492/1533] Georgia O'Ramey
+  [493/1533] Edna Owen
+  [494/1533] Ruth Bryan Owen
+  [495/1533] Pauline Dunwell Partridge
+  [496/1533] Ella Sachs Plotz
+  [497/1533] Olga Povitzky
+  [498/1533] Hallie E. Queen
+  [499/1533] Lotta S. Rand
+  [500/1533] Jeannette Rankin
+  [501/1533] Georgia Willis Read
+  [502/1533] Tsianina Redfeather Blackstone
+  [503/1533] Adena Miller Rich
+  [504/1533] Edith Rickert
+  [505/1533] Gertrude Tressel Rider
+  [506/1533] Mabel Lloyd Ridgely
+  [507/1533] Amabel Scharff Roberts
+  [508/1533] Daisy Maude Orleman Robinson
+  [509/1533] Josephine Roche
+  [510/1533] Arabella Page Rodman
+  [511/1533] Henrietta Rodman
+  [512/1533] Edith Rosenbaum
+  [513/1533] Marian E. Rottman
+  [514/1533] A. Margaret Russanowska
+  [515/1533] Lillian Russell
+  [516/1533] Martha M. Russell
+  [517/1533] Antonette Ruth Sabel
+  [518/1533] Sacred Twenty
+  [519/1533] Mabel Seagrave
+  [520/1533] Grace Gallatin Seton Thompson
+  [521/1533] Peggy Shanor
+  [522/1533] Anna Howard Shaw
+  [523/1533] Mary Belle Sherman
+  [524/1533] Jessie L. Simpson
+  [525/1533] Alice Sjoselius
+  [526/1533] Blanche Slocum
+  [527/1533] Agnes Smedley
+  [528/1533] Louise Hortense Snowden
+  [529/1533] Julia Catherine Stimson
+  [530/1533] Katherine Stinson
+  [531/1533] Alice Weld Tallant
+  [532/1533] Julia Hunt Catlin Park DePew Taufflieb
+  [533/1533] Malvina Thompson
+  [534/1533] Eunice Tietjens
+  [535/1533] Katherine D. Tillman
+  [536/1533] Florence Timponi
+  [537/1533] Katherine Bell Tippetts
+  [538/1533] Rosa Lee Tucker
+  [539/1533] Sarah Bacon Tunnicliff
+  [540/1533] Ruth May Tunnicliff
+  [541/1533] Ruth Underhill
+  [542/1533] Medora de Vallombrosa, Marquise de Morès
+  [543/1533] Frances Van Gasken
+  [544/1533] Mary van Kleeck
+  [545/1533] Lolita Coffin Van Rensselaer
+  [546/1533] Marie Van Vorst
+  [547/1533] Mina Van Winkle
+  [548/1533] Anne Harriman Vanderbilt
+  [549/1533] Clarita Vidal
+  [550/1533] Sarah Visanska
+  [551/1533] Bettina Riddle von Hutten
+  [552/1533] Julia Scott Vrooman
+  [553/1533] Lillian Wald
+  [554/1533] Adelaide Wallerstein
+  [555/1533] Winifred Fairfax Warder
+  [556/1533] Estella Weeks
+  [557/1533] Ida Geer Weller
+  [558/1533] Hannah L. Wessling
+  [559/1533] Edith Wharton
+  [560/1533] Georgia Laura White
+  [561/1533] Belle Armstrong Whitney
+  [562/1533] Gertrude Vanderbilt Whitney
+  [563/1533] Josepha Newcomb Whitney
+  [564/1533] Anita Parkhurst Willcox
+  [565/1533] Elizabeth Sprague Williams
+  [566/1533] Muriel Window
+  [567/1533] Frances M. Witherspoon
+  [568/1533] Women's Radio Corps
+  [569/1533] Janet Elliott Wulsin
+  [570/1533] Jane Addams
+  [571/1533] Emily Greene Balch
+  [572/1533] Harry Elmer Barnes
+  [573/1533] George Bellows
+  [574/1533] Meta Berger
+  [575/1533] Victor L. Berger
+  [576/1533] Alexander Berkman
+  [577/1533] Randolph Bourne
+  [578/1533] Earl Browder
+  [579/1533] James P. Cannon
+  [580/1533] Charles Coughlin
+  [581/1533] Dorothy Day
+  [582/1533] Eugene V. Debs
+  [583/1533] Clarence Dill
+  [584/1533] Crystal Eastman
+  [585/1533] Max Eastman
+  [586/1533] Jacob Ewert
+  [587/1533] Henry Ford
+  [588/1533] Luigi Galleani
+  [589/1533] Emma Goldman
+  [590/1533] Philip Grosser
+  [591/1533] Covington Hall
+  [592/1533] Hubert Harrison
+  [593/1533] Bill Haywood
+  [594/1533] Morris Hillquit
+  [595/1533] Joseph and Michael Hofer
+  [596/1533] Edmund Kayser
+  [597/1533] Claude Kitchin
+  [598/1533] Walter Liggett
+  [599/1533] Charles August Lindbergh
+  [600/1533] Frank Little (unionist)
+  [601/1533] Louis P. Lochner
+  [602/1533] Henry Wadsworth Longfellow Dana
+  [603/1533] J. Gresham Machen
+  [604/1533] Judah Leon Magnes
+  [605/1533] Clarence Manion
+  [606/1533] H. L. Mencken
+  [607/1533] George W. Norris
+  [608/1533] Kate Richards O'Hare
+  [609/1533] Louise Olivereau
+  [610/1533] Jacob Panken
+  [611/1533] C. E. Ruthenberg
+  [612/1533] Joseph Franklin Rutherford
+  [613/1533] Vincent Saint John
+  [614/1533] Ben Salmon
+  [615/1533] Isaac R. Sherwood
+  [616/1533] Robert Simmons (prisoner)
+  [617/1533] Mollie Steimer
+  [618/1533] Norman Thomas
+  [619/1533] Louis Untermeyer
+  [620/1533] Thomas E. Watson
+  [621/1533] Jesse Benedict Carter
+  [622/1533] Samuel Albert Cook
+  [623/1533] Gilbert C. Grafton
+  [624/1533] George Mason (racing driver)
+  [625/1533] Robert Ney McNeely
+  [626/1533] Homer Russell Salisbury
+  [627/1533] Art Acord
+  [628/1533] Julius Ochs Adler
+  [629/1533] Robert Alexander (United States Army officer)
+  [630/1533] William W. Ashurst
+  [631/1533] Dwight Edward Aultman
+  [632/1533] Paul Frank Baer
+  [633/1533] Hobey Baker
+  [634/1533] Katharine Baker
+  [635/1533] John Henry Balch
+  [636/1533] Charles Clarendon Ballou
+  [637/1533] Ted Bank
+  [638/1533] Charles D. Barger
+  [639/1533] John William Barker
+  [640/1533] David B. Barkley
+  [641/1533] Larry Barretto
+  [642/1533] Charles H. Barth
+  [643/1533] Frank Leaman Baylies
+  [644/1533] Stanhope Bayne-Jones
+  [645/1533] William Dorrance Beach
+  [646/1533] James Dudley Beane
+  [647/1533] Fred Becker
+  [648/1533] Lewis C. Beebe
+  [649/1533] George Bell Jr.
+  [650/1533] Charles J. Biddle (aviator)
+  [651/1533] Robert Blake (USMC)
+  [652/1533] Victor Bleasdale
+  [653/1533] Arthur Bluethenthal
+  [654/1533] Frank C. Bolles
+  [655/1533] Joel Thompson Boone
+  [656/1533] Solon Borglum
+  [657/1533] Albert Jesse Bowley Sr.
+  [658/1533] Gustav Joseph Braun
+  [659/1533] Lloyd Milton Brett
+  [660/1533] Louis Bromfield
+  [661/1533] Andrew Davis Bruce
+  [662/1533] Beaumont B. Buck
+  [663/1533] Florence Church Bullard
+  [664/1533] Omar Bundy
+  [665/1533] William P. Burnham
+  [666/1533] Wilson Bryant Burtt
+  [667/1533] William Ormond Butler
+  [668/1533] George H. Cameron
+  [669/1533] Thomas Gantz Cassady
+  [670/1533] Clifton B. Cates
+  [671/1533] Albertus W. Catlin
+  [672/1533] William Chamberlaine
+  [673/1533] Willard Joseph Chamberlin
+  [674/1533] Arthur S. Champeny
+  [675/1533] Sherwood Cheney
+  [676/1533] Arthur L. Conger
+  [677/1533] Edward J. Connelly
+  [678/1533] James Alexander Connelly Jr.
+  [679/1533] Fox Conner
+  [680/1533] William Durward Connor
+  [681/1533] Louis Chapin Covell
+  [682/1533] Louis A. Craig
+  [683/1533] Malin Craig
+  [684/1533] Jane Craven
+  [685/1533] William Penn Cresson
+  [686/1533] Adelbert Cronkhite
+  [687/1533] Harry Crosby
+  [688/1533] Donald C. Cubbison
+  [689/1533] Louis Cukela
+  [690/1533] Paul Trauger Culbertson Sr.
+  [691/1533] Samuel C. Cumming
+  [692/1533] W. Arthur Cunningham
+  [693/1533] Daniel Daly
+  [694/1533] Herman Davis
+  [695/1533] Ernest J. Dawley
+  [696/1533] Zella de Milhau
+  [697/1533] Alphonse DeCarre
+  [698/1533] Robert L. Denig
+  [699/1533] John B. DeValles
+  [700/1533] Frank M. Dixon
+  [701/1533] Edward Terence Donnelly
+  [702/1533] William J. Donovan
+  [703/1533] Halstead Dorey
+  [704/1533] James C. Dozier
+  [705/1533] Sam Dreben
+  [706/1533] Holland S. Duell
+  [707/1533] Francis P. Duffy
+  [708/1533] George B. Duncan
+  [709/1533] Lucius Loyd Durfee
+  [710/1533] Clarence Ransom Edwards
+  [711/1533] Earl Hancock Ellis
+  [712/1533] Michael B. Ellis
+  [713/1533] LeRoy Eltinge
+  [714/1533] Hanson Edward Ely
+  [715/1533] James Brailsford Erwin
+  [716/1533] Luis R. Esteves
+  [717/1533] Samson L. Faison
+  [718/1533] Charles S. Farnsworth
+  [719/1533] Thomas Farrell (United States Army officer)
+  [720/1533] Logan Feland
+  [721/1533] Hamilton Fish III
+  [722/1533] Harold Benjamin Fiske
+  [723/1533] Clement Flagler
+  [724/1533] James A. Flaherty
+  [725/1533] Charles R. Forbes
+  [726/1533] Gary Evans Foster
+  [727/1533] George L. Fox (chaplain)
+  [728/1533] Stephen O. Fuqua
+  [729/1533] Frederick W. Galbraith
+  [730/1533] Preston Geren Sr.
+  [731/1533] Floyd Gibbons
+  [732/1533] Walter Henry Gordon
+  [733/1533] John Campbell Greenway
+  [734/1533] Earle Davis Gregory
+  [735/1533] David Guy
+  [736/1533] Vernon M. Guymon
+  [737/1533] Joseph William Guyton
+  [738/1533] William G. Haan
+  [739/1533] Charles P. Hall
+  [740/1533] Madelon Battle Hancock
+  [741/1533] Ray Hanson
+  [742/1533] James Harbord
+  [743/1533] George Delancey Harris
+  [744/1533] Sidney Hatch
+  [745/1533] William H. Hay
+  [746/1533] George Price Hays
+  [747/1533] William Hayward (American attorney)
+  [748/1533] Victor Heintz
+  [749/1533] Henry Herman Harjes
+  [750/1533] Leo D. Hermle
+  [751/1533] Rafael Hernández Marín
+  [752/1533] Sheila Hibben
+  [753/1533] Ernest Hinds
+  [754/1533] John L. Hines
+  [755/1533] Bob Hoffman (sports promoter)
+  [756/1533] Thomas Holcomb
+  [757/1533] Nelson M. Holderman
+  [758/1533] William F. Howe (general)
+  [759/1533] Robert Lee Howze
+  [760/1533] Clarence R. Huebner
+  [761/1533] John Arthur Hughes
+  [762/1533] Henry L. Hulbert
+  [763/1533] John Augustus Hulen
+  [764/1533] LeRoy P. Hunt
+  [765/1533] Gilder D. Jackson Jr.
+  [766/1533] Horatio Nelson Jackson
+  [767/1533] Ernest A. Janson
+  [768/1533] Evan M. Johnson
+  [769/1533] Royal C. Johnson
+  [770/1533] William Johnston Jr.
+  [771/1533] Louis R. Jones
+  [772/1533] Benjamin Kaufman
+  [773/1533] Bernard W. Kearney
+  [774/1533] Lau Sing Kee
+  [775/1533] Harry Kelly (politician)
+  [776/1533] John J. Kelly
+  [777/1533] Albert W. Kenner
+  [778/1533] Ralph S. Keyser
+  [779/1533] Charles E. Kilbourne
+  [780/1533] Joyce Kilmer
+  [781/1533] Campbell King
+  [782/1533] Edward Leonard King
+  [783/1533] Matthew H. Kingman
+  [784/1533] Edward C. Kirkland
+  [785/1533] Joseph E. Kuhn
+  [786/1533] Charles Willauer Kutz
+  [787/1533] Gorman DeFreest Larner
+  [788/1533] Henry Louis Larsen
+  [789/1533] William Lassiter
+  [790/1533] George E. Leach
+  [791/1533] E. Brooke Lee
+  [792/1533] John C. H. Lee
+  [793/1533] Barnwell R. Legge
+  [794/1533] John A. Lejeune
+  [795/1533] Hunter Liggett
+  [796/1533] Walter F. Lineberger
+  [797/1533] Walter Lovell
+  [798/1533] Raoul Lufbery
+  [799/1533] Douglas MacArthur
+  [800/1533] Beatrice Mary MacDonald
+  [801/1533] Cornelius H. Mack
+  [802/1533] Hanford MacNider
+  [803/1533] Alexander MacWilliam Sr.
+  [804/1533] Paul Bernard Malone
+  [805/1533] William March
+  [806/1533] George C. Marshall
+  [807/1533] James W. McAndrew
+  [808/1533] James Rogers McConnell
+  [809/1533] Frank Ross McCoy
+  [810/1533] Horace McCoy
+  [811/1533] Edward McGlachlin Jr.
+  [812/1533] Joe McGlone
+  [813/1533] Rustin McIntosh
+  [814/1533] George W. McIver
+  [815/1533] John McSweeney (Ohio politician)
+  [816/1533] Walter Melchior
+  [817/1533] Dana T. Merrill
+  [818/1533] William D. Meyering
+  [819/1533] William Shainline Middleton
+  [820/1533] Perry L. Miles
+  [821/1533] Samuel J. Montgomery
+  [822/1533] James F. Moriarty (USMC)
+  [823/1533] Frederick Augustus Muhlenberg
+  [824/1533] Maxwell Murray
+  [825/1533] William K. Naylor
+  [826/1533] Thomas C. Neibaur
+  [827/1533] Wendell Cushing Neville
+  [828/1533] William Jones Nicholson
+  [829/1533] Alfred H. Noble
+  [830/1533] Joseph Oklahombi
+  [831/1533] Richard W. O'Neill
+  [832/1533] John F. O'Ryan
+  [833/1533] John Painter (supercentenarian)
+  [834/1533] John McAuley Palmer (United States Army officer)
+  [835/1533] Edwin Charles Parsons
+  [836/1533] Joseph D. Patch
+  [837/1533] Albert Patterson
+  [838/1533] George S. Patton
+  [839/1533] Waldo Peirce
+  [840/1533] Isabel Weld Perkins
+  [841/1533] Richard Peters (clubman)
+  [842/1533] David McKelvey Peterson
+  [843/1533] Orlando Henderson Petty
+  [844/1533] Charles W. Plummer
+  [845/1533] Neilson Poe (American football)
+  [846/1533] William Thomas Ponder
+  [847/1533] Benjamin A. Poore
+  [848/1533] Thomas A. Pope
+  [849/1533] Kenneth Lee Porter
+  [850/1533] Ray E. Porter
+  [851/1533] William G. Price Jr.
+  [852/1533] John H. Pruitt
+  [853/1533] Edmund R. Purves
+  [854/1533] Bennet Puryear Jr.
+  [855/1533] David Endicott Putnam
+  [856/1533] George Windle Read
+  [857/1533] B. Carroll Reece
+  [858/1533] Eddie Rickenbacker
+  [859/1533] James E. Rieger
+  [860/1533] Félix Rigau Carrera
+  [861/1533] William E. Riley
+  [862/1533] William C. Rivers
+  [863/1533] Charles DuVal Roberts
+  [864/1533] William Hudson Rogers
+  [865/1533] William W. Rogers
+  [866/1533] Archibald Roosevelt
+  [867/1533] Theodore Roosevelt Jr.
+  [868/1533] Ralph Royce
+  [869/1533] Edward Rucker
+  [870/1533] Thomas Jefferson Ryan
+  [871/1533] Emily Ryerson
+  [872/1533] Joseph B. Sanborn
+  [873/1533] Henry Sayen
+  [874/1533] Herbert M. Sears
+  [875/1533] James M. Sellers
+  [876/1533] Marcelino Serna
+  [877/1533] Sumner Sewall
+  [878/1533] Maurice E. Shearer
+  [879/1533] George Henry Shelton
+  [880/1533] Elliott Shepard
+  [881/1533] Lemuel C. Shepherd Jr.
+  [882/1533] Clarence O. Sherrill
+  [883/1533] George K. Shuler
+  [884/1533] Merwin H. Silverthorn
+  [885/1533] Francis May Simonds
+  [886/1533] William Hood Simpson
+  [887/1533] Amor L. Sims
+  [888/1533] Harry Alexander Smith
+  [889/1533] Holland Smith
+  [890/1533] Walter Bedell Smith
+  [891/1533] Laurence Stallings
+  [892/1533] Merch Bradt Stewart
+  [893/1533] Allen Melancthon Sumner
+  [894/1533] Henry Terrell Jr.
+  [895/1533] William Thaw II
+  [896/1533] Joseph H. Thompson
+  [897/1533] Stephen W. Thompson
+  [898/1533] Clement A. Trott
+  [899/1533] Louis Van Iersel
+  [900/1533] Harry H. Vaughan
+  [901/1533] John C. Villepigue
+  [902/1533] George Douglas Wahl
+  [903/1533] Albert W. Waldron
+  [904/1533] Littleton W. T. Waller Jr.
+  [905/1533] John C. Ward
+  [906/1533] William J. Warfield
+  [907/1533] Edwin M. Watson
+  [908/1533] Frederick V. Waugh
+  [909/1533] George H. Weems
+  [910/1533] William Weigel
+  [911/1533] William A. Wellman
+  [912/1533] Walter H. Wheeler Jr.
+  [913/1533] Warren Whitside
+  [914/1533] Francis Bowditch Wilby
+  [915/1533] Amos Wilder
+  [916/1533] Harvey Ladew Williams Jr.
+  [917/1533] Harold Buckley Willis
+  [918/1533] Edwin B. Winans (soldier)
+  [919/1533] Roswell Winans
+  [920/1533] Edmund Wittenmyer
+  [921/1533] John Shirley Wood
+  [922/1533] Samuel Woodfill
+  [923/1533] William M. Wright
+  [924/1533] Wilfred Yackey
+  [925/1533] Alvin York
+  [926/1533] A. Piatt Andrew
+  [927/1533] Colonel Francis J. Beatty
+  [928/1533] Brooks Benedict
+  [929/1533] Robert Sidney Bowen
+  [930/1533] William Slater Brown
+  [931/1533] Julien Bryan
+  [932/1533] Greayer Clover
+  [933/1533] Malcolm Cowley
+  [934/1533] E. E. Cummings
+  [935/1533] John Dos Passos
+  [936/1533] Julien Green
+  [937/1533] Robert Hillyer
+  [938/1533] Sidney Howard
+  [939/1533] James Hazen Hyde
+  [940/1533] Robert Whitney Imbrie
+  [941/1533] Philip O. Mills
+  [942/1533] Edward A. Weeks
+  [943/1533] Jerry Akers
+  [944/1533] Alice Orme Smith
+  [945/1533] Edgar Allen
+  [946/1533] Roy Alvin Baldwin
+  [947/1533] Abel Baer
+  [948/1533] Sweetbread Bailey
+  [949/1533] Birch Bayh (coach)
+  [950/1533] Charles H. Beeson
+  [951/1533] Isaac Bencowitz
+  [952/1533] Claus Benson
+  [953/1533] Gilbert Bettman
+  [954/1533] Dana X. Bible
+  [955/1533] Frederick C. Billard
+  [956/1533] Sidney Blackmer
+  [957/1533] Curtis Boozman
+  [958/1533] Phil Boutelje
+  [959/1533] Fred Boye
+  [960/1533] James Bradbury Jr.
+  [961/1533] Chester Brewer
+  [962/1533] Birdsall Briscoe
+  [963/1533] T. C. Brister
+  [964/1533] Frederick H. Brooke
+  [965/1533] Hal Brown (athlete)
+  [966/1533] Harry Bruno
+  [967/1533] Temple Hoyne Buell
+  [968/1533] Allen Banks Burch
+  [969/1533] Franz U. Burkett
+  [970/1533] Emmet Byrne
+  [971/1533] William D. Byron
+  [972/1533] Gregory Duncan Cameron
+  [973/1533] John C. Cantwell
+  [974/1533] Pedro Miguel Caratini
+  [975/1533] Swede Carlstrom
+  [976/1533] Martin H. Carmody
+  [977/1533] Allen Carpé
+  [978/1533] Thomas Carroll (pilot)
+  [979/1533] George Chandler
+  [980/1533] Ben Mark Cherrington
+  [981/1533] Ken Christy
+  [982/1533] Charles M. Clement
+  [983/1533] Clifton Clowers
+  [984/1533] Stan Cofall
+  [985/1533] Eugene A. Coffin Sr.
+  [986/1533] William Clay Cole
+  [987/1533] Robert J. Collier
+  [988/1533] Lewis Preston Collins II
+  [989/1533] Wilford Conrow
+  [990/1533] Richard Threlkeld Cox
+  [991/1533] Stanley C. Cox
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Charles Cradick: API failed after 3 retries: {'action': 'query', 'titles': 'Charles Cradick', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Edward Cudahy Jr.: API failed after 3 retries: {'action': 'query', 'titles': 'Edward Cudahy Jr.', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP E. McA. Currie: API failed after 3 retries: {'action': 'query', 'titles': 'E. McA. Currie', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Rube Curry: API failed after 3 retries: {'action': 'query', 'titles': 'Rube Curry', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Harry Cutler (politician): API failed after 3 retries: {'action': 'query', 'titles': 'Harry Cutler (politician)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Bronson M. Cutting: API failed after 3 retries: {'action': 'query', 'titles': 'Bronson M. Cutting', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Hollis Dann: API failed after 3 retries: {'action': 'query', 'titles': 'Hollis Dann', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Eugene Davis (doctor): API failed after 3 retries: {'action': 'query', 'titles': 'Eugene Davis (doctor)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Leon S. Davis: API failed after 3 retries: {'action': 'query', 'titles': 'Leon S. Davis', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP James Ozro Day: API failed after 3 retries: {'action': 'query', 'titles': 'James Ozro Day', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP William H. Deering: API failed after 3 retries: {'action': 'query', 'titles': 'William H. Deering', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Jack Dougherty (actor): API failed after 3 retries: {'action': 'query', 'titles': 'Jack Dougherty (actor)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Ashton Dovell: API failed after 3 retries: {'action': 'query', 'titles': 'Ashton Dovell', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Herb Drury: API failed after 3 retries: {'action': 'query', 'titles': 'Herb Drury', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Riggie Dwyer: API failed after 3 retries: {'action': 'query', 'titles': 'Riggie Dwyer', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Carl East: API failed after 3 retries: {'action': 'query', 'titles': 'Carl East', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP V. Raymond Edman: API failed after 3 retries: {'action': 'query', 'titles': 'V. Raymond Edman', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Verdo Elmore: API failed after 3 retries: {'action': 'query', 'titles': 'Verdo Elmore', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Arthur Emerson: API failed after 3 retries: {'action': 'query', 'titles': 'Arthur Emerson', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Arthur Guy Empey: API failed after 3 retries: {'action': 'query', 'titles': 'Arthur Guy Empey', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Dwain Esper: API failed after 3 retries: {'action': 'query', 'titles': 'Dwain Esper', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Clifford Percy Evans: API failed after 3 retries: {'action': 'query', 'titles': 'Clifford Percy Evans', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Hal G. Evarts: API failed after 3 retries: {'action': 'query', 'titles': 'Hal G. Evarts', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP John D. Ewing: API failed after 3 retries: {'action': 'query', 'titles': 'John D. Ewing', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Joseph F. Farley: API failed after 3 retries: {'action': 'query', 'titles': 'Joseph F. Farley', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Stephen Farrell (track and field): API failed after 3 retries: {'action': 'query', 'titles': 'Stephen Farrell (track and field)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Harry A. Fisher: API failed after 3 retries: {'action': 'query', 'titles': 'Harry A. Fisher', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP John J. Fitz Gerald: API failed after 3 retries: {'action': 'query', 'titles': 'John J. Fitz Gerald', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP John Bernard Flannagan: API failed after 3 retries: {'action': 'query', 'titles': 'John Bernard Flannagan', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Tirey L. Ford Jr.: API failed after 3 retries: {'action': 'query', 'titles': 'Tirey L. Ford Jr.', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP John B. Fournet: API failed after 3 retries: {'action': 'query', 'titles': 'John B. Fournet', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Lewis R. Freeman: API failed after 3 retries: {'action': 'query', 'titles': 'Lewis R. Freeman', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Lyman Frimodig: API failed after 3 retries: {'action': 'query', 'titles': 'Lyman Frimodig', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Dot Fulghum: API failed after 3 retries: {'action': 'query', 'titles': 'Dot Fulghum', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Roy Charles Gamble: API failed after 3 retries: {'action': 'query', 'titles': 'Roy Charles Gamble', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Robert Garrison (sculptor): API failed after 3 retries: {'action': 'query', 'titles': 'Robert Garrison (sculptor)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP John Gaty: API failed after 3 retries: {'action': 'query', 'titles': 'John Gaty', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP James J. Gillespie: API failed after 3 retries: {'action': 'query', 'titles': 'James J. Gillespie', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Frank Gleich: API failed after 3 retries: {'action': 'query', 'titles': 'Frank Gleich', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Edgar Godbold: API failed after 3 retries: {'action': 'query', 'titles': 'Edgar Godbold', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Bob Goss (Texas Ranger): API failed after 3 retries: {'action': 'query', 'titles': 'Bob Goss (Texas Ranger)', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Aaron H. Grout: API failed after 3 retries: {'action': 'query', 'titles': 'Aaron H. Grout', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Harry G. Hamlet: API failed after 3 retries: {'action': 'query', 'titles': 'Harry G. Hamlet', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP J. Clifford Hansen: API failed after 3 retries: {'action': 'query', 'titles': 'J. Clifford Hansen', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Frank Cruise Haymond: API failed after 3 retries: {'action': 'query', 'titles': 'Frank Cruise Haymond', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Ernest Hemingway: API failed after 3 retries: {'action': 'query', 'titles': 'Ernest Hemingway', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Waino Hendrickson: API failed after 3 retries: {'action': 'query', 'titles': 'Waino Hendrickson', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Stephen J. Herben Jr.: API failed after 3 retries: {'action': 'query', 'titles': 'Stephen J. Herben Jr.', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Arthur S. Herman: API failed after 3 retries: {'action': 'query', 'titles': 'Arthur S. Herman', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Thomas W. Herren: API failed after 3 retries: {'action': 'query', 'titles': 'Thomas W. Herren', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Lawrence L. Hester: API failed after 3 retries: {'action': 'query', 'titles': 'Lawrence L. Hester', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Richard W. Hoffman: API failed after 3 retries: {'action': 'query', 'titles': 'Richard W. Hoffman', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Chick Holmes: API failed after 3 retries: {'action': 'query', 'titles': 'Chick Holmes', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP William K. Howard: API failed after 3 retries: {'action': 'query', 'titles': 'William K. Howard', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Pooley Hubert: API failed after 3 retries: {'action': 'query', 'titles': 'Pooley Hubert', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Hatcher Hughes: API failed after 3 retries: {'action': 'query', 'titles': 'Hatcher Hughes', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Earl Oliver Hurst: API failed after 3 retries: {'action': 'query', 'titles': 'Earl Oliver Hurst', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+  SKIP Thomas Setzer Hutchison: API failed after 3 retries: {'action': 'query', 'titles': 'Thomas Setzer Hutchison', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main', 'format': 'json'}
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 175, in main
+    article = fetch_article(title)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 93, in fetch_article
+    pages = _api_get({
+            ^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 23, in _api_get
+    time.sleep(wait)
+KeyboardInterrupt
+  WARNING: fetcher exited non-zero for: Category:United States in World War I
+
+[23/41] 18:19:15 — Category:Australian World War I military personnel
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Australian World War I military personnel
+  ↳ Category:Australian World War I military personnel
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Australian World War I military personnel', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Australian World War I military personnel
+
+[24/41] 18:19:47 — Category:Canadian World War I military personnel
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Canadian World War I military personnel
+  ↳ Category:Canadian World War I military personnel
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Canadian World War I military personnel', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Canadian World War I military personnel
+
+[25/41] 18:20:19 — Category:New Zealand World War I military personnel
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:New Zealand World War I military personnel
+  ↳ Category:New Zealand World War I military personnel
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:New Zealand World War I military personnel', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:New Zealand World War I military personnel
+
+[26/41] 18:20:50 — Category:South African World War I military personnel
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:South African World War I military personnel
+  ↳ Category:South African World War I military personnel
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:South African World War I military personnel', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:South African World War I military personnel
+
+[27/41] 18:21:22 — Category:Indian Army during World War I
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Indian Army during World War I
+  ↳ Category:Indian Army during World War I
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Indian Army during World War I', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Indian Army during World War I
+
+[28/41] 18:21:54 — Category:Gallipoli campaign
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Gallipoli campaign
+  ↳ Category:Gallipoli campaign
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Gallipoli campaign', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Gallipoli campaign
+
+[29/41] 18:22:26 — Category:Mesopotamian campaign
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Mesopotamian campaign
+  ↳ Category:Mesopotamian campaign
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Mesopotamian campaign', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Mesopotamian campaign
+
+[30/41] 18:22:57 — Category:East African campaign (World War I)
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:East African campaign (World War I)
+  ↳ Category:East African campaign (World War I)
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:East African campaign (World War I)', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:East African campaign (World War I)
+
+[31/41] 18:23:29 — Category:West African campaign (World War I)
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:West African campaign (World War I)
+  ↳ Category:West African campaign (World War I)
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:West African campaign (World War I)', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:West African campaign (World War I)
+
+[32/41] 18:24:00 — Category:China in World War I
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:China in World War I
+  ↳ Category:China in World War I
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:China in World War I', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:China in World War I
+
+[33/41] 18:24:31 — Category:Japan in World War I
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Japan in World War I
+  ↳ Category:Japan in World War I
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Japan in World War I', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Japan in World War I
+
+[34/41] 18:25:03 — Category:Siege of Tsingtao
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Siege of Tsingtao
+  ↳ Category:Siege of Tsingtao
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Siege of Tsingtao', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Siege of Tsingtao
+
+[35/41] 18:25:35 — Category:Russian Revolution
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Russian Revolution
+  ↳ Category:Russian Revolution
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Russian Revolution', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Russian Revolution
+
+[36/41] 18:26:07 — Category:February Revolution
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:February Revolution
+  ↳ Category:February Revolution
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:February Revolution', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:February Revolution
+
+[37/41] 18:26:39 — Category:October Revolution
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:October Revolution
+  ↳ Category:October Revolution
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:October Revolution', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:October Revolution
+
+[38/41] 18:27:10 — Category:Paris Peace Conference, 1919
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Paris Peace Conference, 1919
+  ↳ Category:Paris Peace Conference, 1919
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Paris Peace Conference, 1919', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Paris Peace Conference, 1919
+
+[39/41] 18:27:42 — Category:Treaty of Versailles
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Treaty of Versailles
+  ↳ Category:Treaty of Versailles
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Treaty of Versailles', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Treaty of Versailles
+
+[40/41] 18:28:13 — Category:League of Nations
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:League of Nations
+  ↳ Category:League of Nations
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:League of Nations', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:League of Nations
+
+[41/41] 18:28:45 — Category:Aftermath of World War I
+Skipping 5819 already-fetched titles
+Walking category tree from: Category:Aftermath of World War I
+  ↳ Category:Aftermath of World War I
+    rate limited — waiting 4s
+    rate limited — waiting 8s
+    rate limited — waiting 16s
+Traceback (most recent call last):
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 186, in <module>
+    main()
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 167, in main
+    titles = get_all_members(args.category, max_depth=args.max_depth)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 78, in get_all_members
+    for title in _category_members(cat, "page"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 51, in _category_members
+    data = _api_get(params)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/abasi/Work/ner-paper/fetcher.py", line 36, in _api_get
+    raise RuntimeError(f"API failed after {MAX_RETRIES} retries: {params}")
+RuntimeError: API failed after 3 retries: {'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Aftermath of World War I', 'cmtype': 'page', 'cmlimit': 500, 'format': 'json'}
+  WARNING: fetcher exited non-zero for: Category:Aftermath of World War I
+
+========================================
+All done: Wed Apr 22 18:29:16 IST 2026
+Total articles in data/wwi_extended.jsonl:     6140
+========================================

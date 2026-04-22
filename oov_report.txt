@@ -1,0 +1,65 @@
+================================================================================
+OOV ANALYSIS — NER Entity Coverage
+================================================================================
+
+Loading training entities from data/train_redacted_curated.jsonl...
+  4863 unique training entities across 7 labels
+
+Loading test entities from data/test_redacted_curated.jsonl...
+  403 unique test entities across 7 labels
+
+================================================================================
+OOV BREAKDOWN BY LABEL
+================================================================================
+
+Label           Test   In Train OOV    OOV %   
+--------------------------------------------------
+EVENT           20     8        12       60.0%
+FAC             6      1        5        83.3%
+GPE             73     39       34       46.6%
+LOC             14     4        10       71.4%
+NORP            53     35       18       34.0%
+ORG             147    32       115      78.2%
+PERSON          93     15       78       83.9%
+--------------------------------------------------
+TOTAL           406    134      272      67.0%
+
+================================================================================
+CORPUS COVERAGE FOR 272 OOV ENTITIES
+================================================================================
+
+Searching corpus for OOV entities...
+
+  OOV entities WITH corpus mentions: 0
+  OOV entities WITH NO corpus mention: 272
+
+Entities with ZERO corpus mentions (need external fetch):
+    - Afghanistan
+    - Alexander Pope Krosnovitch
+    - All-Russia Congress
+    - American Major League
+    - Annexes Nos
+    - Arkhangelsk and Pertominsk
+    - Armenia
+    - Asia
+    - Atlanta Cyclorama & Civil War Museum
+    - Australians
+    - B.E.F. Headquarters
+    - Baghdad
+    - Baltimore
+    - Belgrad
+    - Belknap Press
+    - Berkeley: University of California Press
+    - Bernadotte's Army of the North on
+    - Bethmann-Hollweg
+    - Between Village
+    - Bibliothèque Paul-Émile Boulet de l'Université
+    ... and 252 more
+
+================================================================================
+SUMMARY
+================================================================================
+Current OOV rate: 67.0% (272/406)
+Target: 0.0% OOV (all test entities in training)
+================================================================================
+

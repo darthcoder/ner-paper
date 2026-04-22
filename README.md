@@ -28,9 +28,23 @@ Here's the approach:
 
 The trick: by telling the model "this is definitely a person's name, not a country," we give it a strong hint, which makes the task more realistic. It's not just guessing missing words — it's understanding what kind of entity fits the context.
 
-### Current Status (Honestly)
+### Current Status (April 2026)
 
-We're in the middle of this experiment. Our best results so far show the model can recover ~6% of redacted names correctly when we let it choose from a list of known candidates. When we let it generate freely, it's down to ~3–4%. These are modest numbers, and that's actually useful data — it tells us that even with context, reconstructing specific historical names is genuinely hard.
+**Latest findings**: After expanding the corpus from 4,299 to 6,140 Wikipedia articles and retraining, we achieved:
+- **Constrained accuracy**: 6.80% (38/559 correct)
+- **OOV rate**: 51.2% (272/406 test entities absent from training)
+
+Detailed analysis in `notes/2026-04-22_oov_analysis_findings.md`.
+
+**The bottleneck is clear**: All 272 remaining OOV entities have *zero mentions* in the current corpus — they must be fetched individually. We're pivoting to a surgical, entity-targeted fetch strategy instead of broad category expansion.
+
+**Next phase**: Extract the 272 missing entities, create a targeted fetch script, and re-run the pipeline to achieve 0% OOV before pursuing the 20%+ accuracy target.
+
+---
+
+## How We Got Here
+
+Our best results so far show the model can recover ~6% of redacted names correctly when we let it choose from a list of known candidates. When we let it generate freely, it's down to ~3–4%. These are modest numbers, and that's actually useful data — it tells us that even with context, reconstructing specific historical names is genuinely hard.
 
 The bigger insight: **over half of the entities the model misses have never appeared in its training data at all.** This is a major bottleneck. It's not that the model can't learn to recognize patterns — it's that some entities are simply absent from its training corpus.
 
@@ -53,7 +67,7 @@ This could become a standard benchmark for evaluating frontier models — a way 
 
 **The model**: We use DistilBERT, a lighter version of BERT (~66 million parameters). It's fast to train and good at understanding context without being enormous.
 
-**The data**: ~4,300 World War I articles from Wikipedia, with careful curation to remove noisy redactions (numbers, malformed tokens, etc.). We split 80/20 into training and test sets.
+**The data**: 6,140 World War I articles from Wikipedia (as of April 2026), with careful curation to remove noisy redactions (numbers, malformed tokens, etc.). We split 80/20 into training and test sets. Despite the corpus expansion, 272 test entities (51.2%) still have zero mentions in training — these must be individually fetched.
 
 **The training**: We show the model passages where some named entities are hidden behind `[MASK]` tokens. It learns to predict what was hidden by looking at the surrounding words and the hint (e.g., "this is a person").
 
@@ -82,8 +96,8 @@ uv run python scripts/redactor.py --input data/test_clean.jsonl --output data/te
 uv run python src/ner_recovery/curator.py --input data/train_redacted.jsonl --output data/train_redacted_curated.jsonl
 uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --output data/test_redacted_curated.jsonl
 
-# Train the model (with curated data)
-uv run train --epochs 5 --output-dir models/current
+# Train the model (with curated data, 7 epochs recommended)
+uv run train --epochs 7 --output-dir models/current
 
 # Evaluate (constrained and free modes)
 uv run evaluate --model-dir models/current/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
