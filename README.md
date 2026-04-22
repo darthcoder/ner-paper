@@ -78,11 +78,19 @@ uv run python scripts/splitter.py          # 80/20 split
 uv run python scripts/redactor.py --input data/train_clean.jsonl --output data/train_redacted.jsonl --mode train
 uv run python scripts/redactor.py --input data/test_clean.jsonl --output data/test_redacted.jsonl --mode test
 
-# Train the model
-uv run train
+# Data curation (removes noisy redactions — strongly recommended)
+uv run python src/ner_recovery/curator.py --input data/train_redacted.jsonl --output data/train_redacted_curated.jsonl
+uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --output data/test_redacted_curated.jsonl
 
-# Evaluate
-uv run evaluate
+# Train the model (with curated data)
+uv run train --epochs 5 --output-dir models/current
+
+# Evaluate (constrained and free modes)
+uv run evaluate --model-dir models/current/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
+uv run evaluate --model-dir models/current/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl --mode free
+
+# Analyze OOV (out-of-vocabulary entities)
+uv run python src/ner_recovery/oov_analysis.py --train data/train_redacted_curated.jsonl --test data/test_redacted_curated.jsonl
 ```
 
 ### Data
@@ -110,11 +118,13 @@ Each contains the full model weights and tokenizer.
 
 | File | What It Does |
 |---|---|
-| `src/ner_recovery/train.py` | Fine-tunes DistilBERT on redaction task |
-| `src/ner_recovery/eval.py` | Evaluates model in constrained and free modes |
-| `src/ner_recovery/curator.py` | Filters noisy redactions for clean training |
-| `src/ner_recovery/oov_analysis.py` | Reports which test entities are missing from training |
-| `scripts/redactor.py` | Uses spaCy to redact entities in text |
+| `src/ner_recovery/train.py` | Fine-tunes DistilBERT on redaction task; supports `--epochs N` and `--output-dir PATH` |
+| `src/ner_recovery/eval.py` | Evaluates model in constrained and free modes; accepts `--model-dir`, `--data`, `--train`, `--mode` |
+| `src/ner_recovery/curator.py` | **[NEW]** Filters noisy redactions (numbers, malformed tokens, low-confidence labels) for clean training |
+| `src/ner_recovery/oov_analysis.py` | **[NEW]** Reports which test entities are missing from training candidates; identifies corpus coverage gaps |
+| `scripts/redactor.py` | Uses spaCy to redact entities in text; supports `--mode train` (weighted) or `--mode test` (uniform) |
+| `scripts/combiner.py` | Combines all `*_clean.jsonl` sources into `all_clean.jsonl` (deduplicates by pageid) |
+| `scripts/splitter.py` | Splits `all_clean.jsonl` into 80/20 train/test with seed=42 |
 
 ---
 
