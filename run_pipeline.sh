@@ -26,13 +26,21 @@ uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --out
 echo "✓ Curation complete"
 echo ""
 
-echo "5. Training model (7 epochs)..."
-uv run train --epochs 7 --output-dir models/zero_oov
+echo "5. Filtering test set to zero OOV..."
+uv run python scripts/filter_zero_oov.py \
+    --train data/train_redacted_curated.jsonl \
+    --test data/test_redacted_curated.jsonl \
+    --output data/test_zero_oov.jsonl
+echo "✓ Zero-OOV test set ready"
+echo ""
+
+echo "6. Training model (7 epochs)..."
+uv run train --epochs 7 --output-dir models/current
 echo "✓ Training complete"
 echo ""
 
-echo "6. Evaluating..."
-uv run evaluate --model-dir models/zero_oov/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
+echo "7. Evaluating..."
+uv run evaluate --model-dir models/current/final --data data/test_zero_oov.jsonl --train data/train_redacted_curated.jsonl
 echo "✓ Evaluation complete"
 echo ""
 
