@@ -161,6 +161,9 @@ def train(args: argparse.Namespace) -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
+    prev_loss = None
+    early_stop_threshold = 0.1
+
     for epoch in range(1, args.epochs + 1):
         model.train()
         total_loss = 0.0
@@ -182,6 +185,15 @@ def train(args: argparse.Namespace) -> None:
         model.save_pretrained(ckpt_dir)
         tokenizer.save_pretrained(ckpt_dir)
         print(f"  Checkpoint saved → {ckpt_dir}")
+
+        # Early stopping: check loss improvement
+        if prev_loss is not None:
+            loss_diff = prev_loss - avg_loss
+            print(f"  Loss improvement: {loss_diff:.4f}")
+            if loss_diff < early_stop_threshold:
+                print(f"  ⚠ Loss improvement < {early_stop_threshold}. Early stopping.")
+                break
+        prev_loss = avg_loss
 
     final_dir = args.output_dir / "final"
     model.save_pretrained(final_dir)

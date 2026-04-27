@@ -109,10 +109,10 @@ uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --out
 Train on curated data (recommended):
 
 ```bash
-uv run train --epochs 7 --output-dir models/current
+uv run train --epochs 9 --output-dir models/current
 ```
 
-Default: 7 epochs (override with `--epochs` flag). Model saves to `models/current/` with per-epoch checkpoints and `final/` directory containing the final model weights and tokenizer.
+The `--epochs` flag is required — the internal default is 3. **7 epochs** is the current standard. Model saves to `models/current/` with per-epoch checkpoints and `final/` directory containing the final model weights and tokenizer.
 
 **Output directory conventions**:
 - `models/current/` — latest training run (overwritten with each train)
@@ -145,6 +145,12 @@ uv run evaluate --mode free --model-dir models/current/final --data data/test_re
 ```bash
 # Analyze OOV entities: identify which test entities are missing from training corpus
 uv run python src/ner_recovery/oov_analysis.py --train data/train_redacted_curated.jsonl --test data/test_redacted_curated.jsonl --corpus data/wwi_extended.jsonl
+
+# Fetch Wikipedia articles for OOV entities (appends directly to wwi_extended.jsonl)
+uv run python scripts/fetch_oov_entities.py \
+    --train data/train_redacted_curated.jsonl \
+    --test data/test_redacted_curated.jsonl \
+    --output data/wwi_extended.jsonl
 ```
 
 ### Interpreting Results
@@ -171,49 +177,62 @@ uv run python src/ner_recovery/oov_analysis.py --train data/train_redacted_curat
 
 ### Latest Results (April 2026)
 
-**Curated model** (4,299-article corpus, noise-filtered redactions):
+**`models/zero_oov`** (expanded corpus, curated, 9 epochs, April 24):
+| Mode | Accuracy | OOV | Notes |
+|---|---|---|---|
+| Constrained | 6.61% | 37% (3,131/8,468) | 560/8,468; best: NORP 12.68%, EVENT 10.27% |
+
+**Previous curated model** (4,299-article corpus, April 22):
 | Mode | Accuracy | OOV | Notes |
 |---|---|---|---|
 | Constrained | 7.16% | 67% (272 entities) | 40/559; best: EVENT 38.5%, LOC 19.1% |
 | Free | 3.76% | — | 21/559 |
 
-**Bottleneck identified**: All 272 OOV test entities have zero mentions in training corpus. Cannot improve accuracy without expanding corpus to include these missing entities.
-
-**Previous baseline** (expanded 4,299-article corpus, no curation):
+**Previous baseline** (no curation):
 | Mode | Accuracy | OOV | Notes |
 |---|---|---|---|
-| Constrained | 5.58% | 51.9% | 46/825; EVENT 38.5%, LOC 19.1% |
+| Constrained | 5.58% | 51.9% | 46/825 |
 | Free | 3.64% | — | 30/825 |
 
-## Current Phase: OOV Elimination (April 22, 2026)
+### Zero-OOV Test Filtering
 
-**Goal**: Achieve 0% OOV on test set to unlock model capacity and reach 20%+ constrained accuracy before publishing.
-
-**Strategy**: 
-1. Use `src/ner_recovery/oov_analysis.py` to identify which of the 272 missing entities exist in Wikipedia but aren't in `data/wwi_extended.jsonl`
-2. Use the corpus index to query each OOV entity for corpus mentions
-3. Fetch missing articles from Wikipedia categories targeting:
-   - Countries & regions: Afghanistan, Armenia, Asia
-   - Military units: B.E.F. Headquarters, Bernadotte's Army
-   - Geographic features: Baghdad, Belgrad
-   - Key people: Bethmann-Hollweg, etc.
-4. Once expanded (goal: zero OOV on test set), retrain and evaluate:
+After curation, filter the test set so every redaction's entity appears in the training candidate set (OOV = 0% by construction). OOV redactions are stripped from each article's redactions list — the entity text remains visible as plain text in the passage but is not scored. Articles with no remaining in-train redactions are dropped.
 
 ```bash
-# Combine expanded corpus
-uv run python scripts/combiner.py
+uv run python scripts/filter_zero_oov.py \
+    --train data/train_redacted_curated.jsonl \
+    --test data/test_redacted_curated.jsonl \
+    --output data/test_zero_oov.jsonl
+```
 
-# Re-split, redact, curate
+This produces `data/test_zero_oov.jsonl` (~1,066 articles, ~5,326 evaluable redactions). Use this as `--data` for evaluation. The `run_pipeline.sh` script includes this step automatically.
+
+**Why this framing**: measures engrammatic recall — can the model recover entities it was trained on from context? This is the cleanest signal for the hallucination-probe thesis.
+
+## Current Phase: OOV Elimination (ongoing)
+
+**Goal**: Achieve 0% OOV on test set to unlock model capacity and reach 20%+ constrained accuracy before publishing. OOV is currently 37% (down from 67%) — further corpus expansion needed.
+
+**Strategy**:
+1. Run `scripts/fetch_oov_entities.py` to append Wikipedia articles for remaining OOV entities directly to `data/wwi_extended.jsonl`
+2. Re-run the full pipeline (combine → split → redact → curate → train → eval)
+3. Use corpus index to verify entity coverage before retraining
+
+```bash
+# Fetch missing entity articles
+uv run python scripts/fetch_oov_entities.py \
+    --train data/train_redacted_curated.jsonl \
+    --test data/test_redacted_curated.jsonl \
+    --output data/wwi_extended.jsonl
+
+# Full pipeline (or use run_pipeline.sh)
+uv run python scripts/combiner.py
 uv run python scripts/splitter.py
 uv run python scripts/redactor.py --input data/train_clean.jsonl --output data/train_redacted.jsonl --mode train
 uv run python scripts/redactor.py --input data/test_clean.jsonl --output data/test_redacted.jsonl --mode test
 uv run python src/ner_recovery/curator.py --input data/train_redacted.jsonl --output data/train_redacted_curated.jsonl
 uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --output data/test_redacted_curated.jsonl
-
-# Train on curated data
 uv run train --epochs 7 --output-dir models/zero_oov
-
-# Evaluate
 uv run evaluate --model-dir models/zero_oov/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
 ```
 
@@ -244,7 +263,7 @@ uv run python ignore/wikipedia-institutional-fetishism/analysis/corpus_index.py 
 
 **Raw corpus** (`wwi_corpus.jsonl`, `wwi_extended.jsonl`): `{pageid, title, wikitext}`
 
-**Cleaned** (`*_clean.jsonl`): `{pageid, title, text}`
+**Cleaned** (`*_clean.jsonl`, including `wwi_extended_clean.jsonl`): `{pageid, title, text}`
 
 **Redacted** (`*_redacted.jsonl`):
 ```json
@@ -264,6 +283,8 @@ Offsets are character positions in the redacted text. Redaction sampling seeded 
 `src/ner_recovery/` — installable package:
 - `train.py` — DistilBERT MLM fine-tuning with batched windowed inputs
 - `eval.py` — free and constrained evaluation
+- `curator.py` — multi-pass noise filter; keeps only PERSON, ORG, GPE, EVENT, LOC, FAC, NORP
+- `oov_analysis.py` — identifies test entities absent from training candidates
 
 ### Corpus Loader Spec
 
@@ -275,11 +296,25 @@ The corpus loader (`featherweight-corpus-load.md`) specifies:
 - Use `polars` (not `pandas`)
 - Generator-based (lazy evaluation, one article at a time)
 
+## Tests
+
+```bash
+uv run pytest
+```
+
+Tests live in `tests/` and cover masking logic, janitor, redactor, and splitter. Fast — no GPU required.
+
 ## Common Development Tasks
 
 ### Running a Full Pipeline
 
-When starting fresh or after expanding the corpus:
+Use `run_pipeline.sh` for a one-command run (combines, splits, redacts, curates, trains at 9 epochs, evaluates):
+
+```bash
+bash run_pipeline.sh
+```
+
+Or step by step when starting fresh or after expanding the corpus:
 
 ```bash
 # 1. Clean sources
