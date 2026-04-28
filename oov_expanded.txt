@@ -1,0 +1,67 @@
+================================================================================
+OOV ANALYSIS — NER Entity Coverage
+================================================================================
+
+Loading training entities from data/train_redacted_curated.jsonl...
+  56835 unique training entities across 7 labels
+
+Loading test entities from data/test_redacted_curated.jsonl...
+  5104 unique test entities across 7 labels
+
+================================================================================
+OOV BREAKDOWN BY LABEL
+================================================================================
+
+Label           Test   In Train OOV    OOV %   
+--------------------------------------------------
+EVENT           110    58       52       47.3%
+FAC             108    33       75       69.4%
+GPE             778    363      415      53.3%
+LOC             166    69       97       58.4%
+NORP            338    220      118      34.9%
+ORG             1999   823      1176     58.8%
+PERSON          1728   641      1087     62.9%
+--------------------------------------------------
+TOTAL           5227   2207     3020     57.8%
+
+================================================================================
+CORPUS COVERAGE FOR 2996 OOV ENTITIES
+================================================================================
+
+Searching corpus for OOV entities...
+
+  OOV entities WITH corpus mentions: 0
+  OOV entities WITH NO corpus mention: 2996
+
+Entities with ZERO corpus mentions (need external fetch):
+    - 165th
+    - 180px|thumb|Yane Sandanski
+    - 1905).The Times
+    - 1917–1922 Kent
+    - 1st Naval Task Group
+    - 20th Company
+    - 21st Provisional Squadron
+    - 278th Aero Squadron
+    - 291st
+    - 367ff
+    - 3rd Battalions
+    - 3rd Pioneer Battalion
+    - 433d Aero Squadron
+    - 436th Training Squadron, Dyess AFB
+    - 45th Division
+
+ Order of Battle
+    - 56th Aero Squadron
+    - 5th Expeditionary Force
+    - 60th Brigade
+    - 62nd Division, Provisional Infantry Division
+    - 6th Baron Nunburnholme
+    ... and 2976 more
+
+================================================================================
+SUMMARY
+================================================================================
+Current OOV rate: 57.8% (3020/5227)
+Target: 0.0% OOV (all test entities in training)
+================================================================================
+
