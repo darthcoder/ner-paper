@@ -142,7 +142,18 @@ uv run evaluate --mode free --model-dir models/current/final --data data/test_ze
 
 **Output**: JSON summary with per-label accuracy, total accuracy, OOV counts, and timestamped results file in `evals/`.
 
-### Frontier Model Topline
+### Local / OSS Model Topline (LM Studio)
+
+Load the model in LM Studio, start the local server (default: `http://localhost:1234/v1`), then:
+
+```bash
+uv run python scripts/eval_lmstudio.py --model smollm3-3b
+uv run python scripts/eval_lmstudio.py --model smollm3-3b --base-url http://localhost:1234/v1
+```
+
+The model name must match exactly what LM Studio shows in the server tab. Results save to `evals/` in the same JSON format as Claude evals and appear in `benchmark_table.py`.
+
+### Frontier Model Topline (Claude API)
 
 ```bash
 # Single model (batch API — async, 50% cheaper, no RPM concerns)
