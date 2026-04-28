@@ -149,6 +149,7 @@ Each contains the full model weights and tokenizer.
 | `scripts/eval_claude.py` | Frontier model topline via Claude API (batch or sequential); saves JSON + txt to `evals/` |
 | `scripts/benchmark.py` | Submits multiple Claude models as parallel batches; prints comparison table |
 | `scripts/benchmark_table.py` | Aggregates all saved JSON results from `evals/` into a ranked comparison table |
+| `scripts/eval_lmstudio.py` | Evaluate any local/OSS model via LM Studio's OpenAI-compatible server |
 
 ---
 
