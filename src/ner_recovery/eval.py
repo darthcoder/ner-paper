@@ -207,9 +207,11 @@ def evaluate(args: argparse.Namespace) -> None:
         c = sum(results)
         print(f"  {label:<12} {c:>4}/{n:<4}  {c/n:.2%}")
 
-    # Save report
+    # Save reports
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_path = Path("evals") / f"eval_{args.mode}_{timestamp}.txt"
+    stem = f"eval_{args.mode}_{timestamp}"
+    report_path = Path("evals") / f"{stem}.txt"
+    json_path = Path("evals") / f"{stem}.json"
     report_path.parent.mkdir(exist_ok=True)
     with report_path.open("w") as f:
         f.write(f"{'='*80}\nENGRAMMATIC NAMED ENTITY INFERENCE — EVALUATION REPORT\n{'='*80}\n")
@@ -228,6 +230,23 @@ def evaluate(args: argparse.Namespace) -> None:
             n = len(results)
             c = sum(results)
             f.write(f"  {label:<12} {c:>4}/{n:<4}  {c/n:.2%}\n")
+    result = {
+        "model": str(args.model_dir),
+        "mode": f"distilbert-{args.mode}",
+        "data": str(args.data),
+        "timestamp": datetime.now().isoformat(),
+        "total": total,
+        "correct": correct,
+        "accuracy": accuracy,
+        "by_label": {
+            label: {"correct": sum(res), "total": len(res)}
+            for label, res in sorted(by_label.items())
+        },
+    }
+    if args.mode == "constrained":
+        result["oov"] = oov
+    with json_path.open("w") as f:
+        json.dump(result, f, indent=2)
     print(f"\nReport saved → {report_path}")
 
 
