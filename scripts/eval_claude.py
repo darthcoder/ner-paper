@@ -59,8 +59,9 @@ BATCH_POLL_INTERVAL = 60  # seconds between batch status checks
 # Shared helpers
 # ---------------------------------------------------------------------------
 
-def count_redactions(text: str) -> int:
-    return len(re.findall(r"\[REDACTED:[A-Z]+\]", text))
+def redaction_positions(text: str) -> list[int]:
+    """Return character start positions of every [REDACTED:*] token in text."""
+    return [m.start() for m in re.finditer(r"\[REDACTED:[A-Z]+\]", text)]
 
 
 def build_message(text: str) -> list[dict]:
@@ -99,15 +100,31 @@ def parse_predictions(raw: str, n_expected: int) -> list[str]:
 
 
 def load_records(data_path: Path) -> list[dict]:
+    """Load all articles that have at least one scoreable redaction.
+
+    filter_zero_oov.py leaves OOV [REDACTED:LABEL] tokens in the text but
+    removes them from the metadata. We keep all articles and resolve which
+    prediction slot maps to each metadata entry at scoring time.
+    """
     with open(data_path) as f:
         records = []
         for line in f:
             r = json.loads(line)
             redactions = sorted(r.get("redactions", []), key=lambda x: x["start"])
-            n = count_redactions(r["text"])
-            if not redactions or n != len(redactions):
+            if not redactions:
                 continue
             r["redactions"] = redactions
+            # Pre-compute: positional index of each metadata redaction among
+            # all [REDACTED:*] tokens in the text (for scoring alignment).
+            positions = redaction_positions(r["text"])
+            pos_to_idx = {pos: i for i, pos in enumerate(positions)}
+            r["_pred_indices"] = [
+                pos_to_idx[red["start"]]
+                for red in redactions
+                if red["start"] in pos_to_idx
+            ]
+            # n_tokens_in_text = total [REDACTED:*] count Claude must predict
+            r["_n_tokens"] = len(positions)
             records.append(r)
     return records
 
@@ -116,20 +133,19 @@ def score_predictions(
     records: list[dict],
     predictions_by_id: dict[str, list[str]],
 ) -> tuple[int, int, dict[str, list[bool]]]:
-    """Compare predictions to ground truth. Returns (total, correct, by_label)."""
+    """Compare predictions to ground truth using pre-computed positional indices."""
     total = correct = 0
     by_label: dict[str, list[bool]] = defaultdict(list)
     for record in records:
         preds = predictions_by_id.get(str(record["pageid"]), [])
-        for i, r in enumerate(record["redactions"]):
-            pred = preds[i] if i < len(preds) else ""
-            original = r["original"].strip()
-            label = r["label"]
+        pred_indices = record.get("_pred_indices", list(range(len(record["redactions"]))))
+        for r, idx in zip(record["redactions"], pred_indices):
+            pred = preds[idx] if idx < len(preds) else ""
             total += 1
-            match = pred.lower() == original.lower()
+            match = pred.lower() == r["original"].strip().lower()
             if match:
                 correct += 1
-            by_label[label].append(match)
+            by_label[r["label"]].append(match)
     return total, correct, by_label
 
 
@@ -218,7 +234,7 @@ def run_batch(
             custom_id=str(record["pageid"]),
             params=MessageCreateParamsNonStreaming(
                 model=model,
-                max_tokens=512,
+                max_tokens=max(512, record["_n_tokens"] * 20),
                 system=SYSTEM_PROMPT,
                 messages=build_message(record["text"]),
             ),
@@ -245,18 +261,19 @@ def run_batch(
 
     print("\nCollecting results...")
     predictions_by_id: dict[str, list[str]] = {}
+    record_by_id = {str(r["pageid"]): r for r in records}
     for result in client.messages.batches.results(batch.id):
         pageid = result.custom_id
-        record = next((r for r in records if str(r["pageid"]) == pageid), None)
+        record = record_by_id.get(pageid)
         if record is None:
             continue
-        n_expected = len(record["redactions"])
+        n_tokens = record["_n_tokens"]
         if result.result.type == "succeeded":
             msg = result.result.message
             raw = next((b.text for b in msg.content if b.type == "text"), "")
-            predictions_by_id[pageid] = parse_predictions(raw, n_expected)
+            predictions_by_id[pageid] = parse_predictions(raw, n_tokens)
         else:
-            predictions_by_id[pageid] = [""] * n_expected
+            predictions_by_id[pageid] = [""] * n_tokens
 
     total, correct, by_label = score_predictions(records, predictions_by_id)
 
@@ -311,9 +328,8 @@ def run_sequential(
 
     predictions_by_id: dict[str, list[str]] = {}
     for i, record in enumerate(tqdm(records, desc="Articles")):
-        n_expected = len(record["redactions"])
         predictions_by_id[str(record["pageid"])] = call_claude_sequential(
-            client, model, record["text"], n_expected
+            client, model, record["text"], record["_n_tokens"]
         )
         # Rate limiting: sleep between requests (skip after the last one)
         if i < len(records) - 1:

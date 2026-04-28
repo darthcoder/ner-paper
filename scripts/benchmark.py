@@ -83,9 +83,15 @@ def load_records(data_path: Path) -> list[dict]:
         for line in f:
             r = json.loads(line)
             redactions = sorted(r.get("redactions", []), key=lambda x: x["start"])
-            if not redactions or count_redactions(r["text"]) != len(redactions):
+            if not redactions:
                 continue
             r["redactions"] = redactions
+            positions = [m.start() for m in re.finditer(r"\[REDACTED:[A-Z]+\]", r["text"])]
+            pos_to_idx = {pos: i for i, pos in enumerate(positions)}
+            r["_pred_indices"] = [
+                pos_to_idx[red["start"]] for red in redactions if red["start"] in pos_to_idx
+            ]
+            r["_n_tokens"] = len(positions)
             records.append(r)
     return records
 
@@ -98,8 +104,9 @@ def score(
     by_label: dict[str, list[bool]] = defaultdict(list)
     for record in records:
         preds = predictions_by_id.get(str(record["pageid"]), [])
-        for i, r in enumerate(record["redactions"]):
-            pred = preds[i] if i < len(preds) else ""
+        pred_indices = record.get("_pred_indices", list(range(len(record["redactions"]))))
+        for r, idx in zip(record["redactions"], pred_indices):
+            pred = preds[idx] if idx < len(preds) else ""
             total += 1
             match = pred.lower() == r["original"].strip().lower()
             if match:
@@ -126,7 +133,7 @@ def submit_batch(
             custom_id=str(r["pageid"]),
             params=MessageCreateParamsNonStreaming(
                 model=model,
-                max_tokens=512,
+                max_tokens=max(512, r["_n_tokens"] * 20),
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": r["text"]}],
             ),
@@ -149,14 +156,14 @@ def collect_batch(
         record = record_by_id.get(pageid)
         if record is None:
             continue
-        n = len(record["redactions"])
+        n_tokens = record["_n_tokens"]
         if result.result.type == "succeeded":
             raw = next(
                 (b.text for b in result.result.message.content if b.type == "text"), ""
             )
-            predictions[pageid] = parse_predictions(raw, n)
+            predictions[pageid] = parse_predictions(raw, n_tokens)
         else:
-            predictions[pageid] = [""] * n
+            predictions[pageid] = [""] * n_tokens
     return predictions
 
 

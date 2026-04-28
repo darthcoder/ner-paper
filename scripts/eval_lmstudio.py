@@ -75,9 +75,15 @@ def load_records(data_path: Path) -> list[dict]:
         for line in f:
             r = json.loads(line)
             redactions = sorted(r.get("redactions", []), key=lambda x: x["start"])
-            if not redactions or count_redactions(r["text"]) != len(redactions):
+            if not redactions:
                 continue
             r["redactions"] = redactions
+            positions = [m.start() for m in re.finditer(r"\[REDACTED:[A-Z]+\]", r["text"])]
+            pos_to_idx = {pos: i for i, pos in enumerate(positions)}
+            r["_pred_indices"] = [
+                pos_to_idx[red["start"]] for red in redactions if red["start"] in pos_to_idx
+            ]
+            r["_n_tokens"] = len(positions)
             records.append(r)
     return records
 
@@ -125,9 +131,11 @@ def evaluate(args: argparse.Namespace) -> None:
     by_label: dict[str, list[bool]] = defaultdict(list)
 
     for record in tqdm(records, desc="Articles"):
-        n_expected = len(record["redactions"])
-        predictions = call_model(client, args.model, record["text"], n_expected)
-        for r, pred in zip(record["redactions"], predictions):
+        n_tokens = record["_n_tokens"]
+        predictions = call_model(client, args.model, record["text"], n_tokens)
+        pred_indices = record.get("_pred_indices", list(range(len(record["redactions"]))))
+        for r, idx in zip(record["redactions"], pred_indices):
+            pred = predictions[idx] if idx < len(predictions) else ""
             original = r["original"].strip()
             total += 1
             match = pred.lower() == original.lower()
