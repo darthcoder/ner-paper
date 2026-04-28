@@ -19,3 +19,4 @@ models/
 ignore/
 .env*
 .env
+.env.bak
