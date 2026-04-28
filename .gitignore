@@ -18,3 +18,4 @@ models/
 # Local ignore folder
 ignore/
 .env*
+.env
