@@ -30,29 +30,33 @@ The trick: by telling the model "this is definitely a person's name, not a count
 
 ### Current Status (April 2026)
 
-**Latest findings**: After expanding the corpus from 4,299 to 6,140 Wikipedia articles and retraining, we achieved:
-- **Constrained accuracy**: 6.80% (38/559 correct)
-- **OOV rate**: 51.2% (272/406 test entities absent from training)
+**Frontier model topline** (April 28, zero-OOV test set, 316 redactions):
 
-Detailed analysis in `notes/2026-04-22_oov_analysis_findings.md`.
+| Model | Overall | NORP | GPE | EVENT | PERSON | ORG | LOC |
+|---|---|---|---|---|---|---|---|
+| Claude Sonnet 4.6 | **56.3%** | 79.5% | 57.7% | 58.1% | 56.8% | 34.7% | 14.3% |
+| Claude Haiku 4.5 | **44.0%** | 68.0% | 52.6% | 35.5% | 29.5% | 25.3% | 14.3% |
+| DistilBERT (fine-tuned, constrained) | **6.6%** | 12.7% | — | 10.3% | — | — | — |
 
-**The bottleneck is clear**: All 272 remaining OOV entities have *zero mentions* in the current corpus — they must be fetched individually. We're pivoting to a surgical, entity-targeted fetch strategy instead of broad category expansion.
+The frontier–fine-tuned gap (44–56% vs 6.6%) is the paper's core finding: DistilBERT recovers roughly 12–15% of what a frontier model can infer from the same context, with no pretraining advantage. Claude Opus results pending.
 
-**Next phase**: Extract the 272 missing entities, create a targeted fetch script, and re-run the pipeline to achieve 0% OOV before pursuing the 20%+ accuracy target.
+**Zero-OOV evaluation**: `data/test_zero_oov.jsonl` strips OOV redactions so every scored entity appears in the training candidate set — the cleanest signal for the hallucination-probe thesis. This is now the primary evaluation target.
+
+**DistilBERT baseline**: `models/zero_oov` (6,575-article corpus, 9 epochs, April 24) — 6.61% constrained accuracy, 37% OOV on the full test set.
 
 ---
 
 ## How We Got Here
 
-Our best results so far show the model can recover ~6% of redacted names correctly when we let it choose from a list of known candidates. When we let it generate freely, it's down to ~3–4%. These are modest numbers, and that's actually useful data — it tells us that even with context, reconstructing specific historical names is genuinely hard.
+Our best results so far show the model can recover ~6.6% of redacted names correctly when we let it choose from a list of known candidates. When we let it generate freely, it's down to ~3–4%. These are modest numbers, and that's actually useful data — it tells us that even with context, reconstructing specific historical names is genuinely hard.
 
-The bigger insight: **over half of the entities the model misses have never appeared in its training data at all.** This is a major bottleneck. It's not that the model can't learn to recognize patterns — it's that some entities are simply absent from its training corpus.
+The bigger insight: **37% of the entities the model is tested on have never appeared in its training data at all.** This is a major bottleneck. It's not that the model can't learn to recognize patterns — it's that some entities are simply absent from its training corpus. We're systematically eliminating this gap through targeted corpus expansion.
 
 ---
 
 ## What If We Succeed?
 
-If we could push this to, say, 40–50% accuracy (still far from perfect, but meaningful), it would mean:
+Frontier models already hit 44–56% on this task. The question is now whether a fine-tuned model can close that gap. If we could push the fine-tuned baseline to 20–30%, it would mean:
 
 - **Better hallucination detection**: We'd have a probe for when models confabulate names or facts
 - **Understanding knowledge gaps**: We'd know which historical actors and events a model genuinely doesn't know about
@@ -67,7 +71,7 @@ This could become a standard benchmark for evaluating frontier models — a way 
 
 **The model**: We use DistilBERT, a lighter version of BERT (~66 million parameters). It's fast to train and good at understanding context without being enormous.
 
-**The data**: 6,140 World War I articles from Wikipedia (as of April 2026), with careful curation to remove noisy redactions (numbers, malformed tokens, etc.). We split 80/20 into training and test sets. Despite the corpus expansion, 272 test entities (51.2%) still have zero mentions in training — these must be individually fetched.
+**The data**: 6,575 World War I articles from Wikipedia (as of April 2026), with careful curation to remove noisy redactions (numbers, malformed tokens, etc.). We split 80/20 into training and test sets. OOV is currently 37% and dropping as targeted entity fetching continues.
 
 **The training**: We show the model passages where some named entities are hidden behind `[MASK]` tokens. It learns to predict what was hidden by looking at the surrounding words and the hint (e.g., "this is a person").
 
@@ -110,9 +114,10 @@ uv run python src/ner_recovery/oov_analysis.py --train data/train_redacted_curat
 ### Data
 
 Raw corpora live in `data/`:
-- `wwi_extended.jsonl` — ~4,300 Wikipedia articles, cleaned plaintext
-- `train_redacted.jsonl` — training set with redacted entities
-- `test_redacted.jsonl` — test set for evaluation
+- `wwi_extended.jsonl` — ~6,575 Wikipedia articles, cleaned plaintext
+- `train_redacted_curated.jsonl` — curated training set with redacted entities
+- `test_redacted_curated.jsonl` — curated test set for evaluation
+- `test_zero_oov.jsonl` — test set filtered so every redaction's entity appears in training candidates
 
 Each redaction record contains:
 - The article title and text
@@ -134,11 +139,16 @@ Each contains the full model weights and tokenizer.
 |---|---|
 | `src/ner_recovery/train.py` | Fine-tunes DistilBERT on redaction task; supports `--epochs N` and `--output-dir PATH` |
 | `src/ner_recovery/eval.py` | Evaluates model in constrained and free modes; accepts `--model-dir`, `--data`, `--train`, `--mode` |
-| `src/ner_recovery/curator.py` | **[NEW]** Filters noisy redactions (numbers, malformed tokens, low-confidence labels) for clean training |
-| `src/ner_recovery/oov_analysis.py` | **[NEW]** Reports which test entities are missing from training candidates; identifies corpus coverage gaps |
+| `src/ner_recovery/curator.py` | Filters noisy redactions (numbers, malformed tokens, low-confidence labels) for clean training |
+| `src/ner_recovery/oov_analysis.py` | Reports which test entities are missing from training candidates; identifies corpus coverage gaps |
 | `scripts/redactor.py` | Uses spaCy to redact entities in text; supports `--mode train` (weighted) or `--mode test` (uniform) |
 | `scripts/combiner.py` | Combines all `*_clean.jsonl` sources into `all_clean.jsonl` (deduplicates by pageid) |
 | `scripts/splitter.py` | Splits `all_clean.jsonl` into 80/20 train/test with seed=42 |
+| `scripts/fetch_oov_entities.py` | Fetches Wikipedia articles for OOV entities and appends to `wwi_extended.jsonl` |
+| `scripts/filter_zero_oov.py` | Strips OOV redactions from test set; produces `test_zero_oov.jsonl` for clean evaluation |
+| `scripts/eval_claude.py` | Frontier model topline via Claude API (batch or sequential); saves JSON + txt to `evals/` |
+| `scripts/benchmark.py` | Submits multiple Claude models as parallel batches; prints comparison table |
+| `scripts/benchmark_table.py` | Aggregates all saved JSON results from `evals/` into a ranked comparison table |
 
 ---
 

@@ -109,7 +109,7 @@ uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --out
 Train on curated data (recommended):
 
 ```bash
-uv run train --epochs 9 --output-dir models/current
+uv run train --epochs 7 --output-dir models/current
 ```
 
 The `--epochs` flag is required — the internal default is 3. **7 epochs** is the current standard. Model saves to `models/current/` with per-epoch checkpoints and `final/` directory containing the final model weights and tokenizer.
@@ -131,14 +131,36 @@ Two inference modes (both in `src/ner_recovery/eval.py`, exposed via `uv run eva
 ### Evaluation Commands
 
 ```bash
-# Constrained mode (default, recommended)
-uv run evaluate --model-dir models/current/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
+# Constrained mode — use test_zero_oov.jsonl for cleanest signal (OOV = 0% by construction)
+uv run evaluate --model-dir models/current/final --data data/test_zero_oov.jsonl --train data/train_redacted_curated.jsonl
 
 # Free mode
-uv run evaluate --mode free --model-dir models/current/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
+uv run evaluate --mode free --model-dir models/current/final --data data/test_zero_oov.jsonl --train data/train_redacted_curated.jsonl
+
+# Use test_redacted_curated.jsonl instead to measure raw OOV impact
 ```
 
 **Output**: JSON summary with per-label accuracy, total accuracy, OOV counts, and timestamped results file in `evals/`.
+
+### Frontier Model Topline
+
+```bash
+# Single model (batch API — async, 50% cheaper, no RPM concerns)
+uv run python scripts/eval_claude.py --data data/test_zero_oov.jsonl
+uv run python scripts/eval_claude.py --model claude-sonnet-4-6
+
+# Sequential fallback (~27 RPM, rate-limited)
+uv run python scripts/eval_claude.py --no-batch
+
+# Multiple models in parallel (one batch submission per model, all simultaneous)
+uv run python scripts/benchmark.py
+uv run python scripts/benchmark.py --models claude-haiku-4-5-20251001 claude-sonnet-4-6 claude-opus-4-6
+
+# Print comparison table from all saved JSON results in evals/
+uv run python scripts/benchmark_table.py --latest
+```
+
+All eval runs save both `.txt` and `.json` to `evals/`. The JSON files are machine-readable and aggregated by `benchmark_table.py`.
 
 ### Analysis Tools
 
@@ -177,22 +199,17 @@ uv run python scripts/fetch_oov_entities.py \
 
 ### Latest Results (April 2026)
 
+**Frontier model topline** (zero-OOV test set, 316 redactions, April 28):
+| Model | Overall | NORP | GPE | EVENT | PERSON | ORG |
+|---|---|---|---|---|---|---|
+| Claude Sonnet 4.6 | 56.3% | 79.5% | 57.7% | 58.1% | 56.8% | 34.7% |
+| Claude Haiku 4.5 | 44.0% | 68.0% | 52.6% | 35.5% | 29.5% | 25.3% |
+| DistilBERT constrained | 6.6% | 12.7% | — | 10.3% | — | — |
+
 **`models/zero_oov`** (expanded corpus, curated, 9 epochs, April 24):
 | Mode | Accuracy | OOV | Notes |
 |---|---|---|---|
 | Constrained | 6.61% | 37% (3,131/8,468) | 560/8,468; best: NORP 12.68%, EVENT 10.27% |
-
-**Previous curated model** (4,299-article corpus, April 22):
-| Mode | Accuracy | OOV | Notes |
-|---|---|---|---|
-| Constrained | 7.16% | 67% (272 entities) | 40/559; best: EVENT 38.5%, LOC 19.1% |
-| Free | 3.76% | — | 21/559 |
-
-**Previous baseline** (no curation):
-| Mode | Accuracy | OOV | Notes |
-|---|---|---|---|
-| Constrained | 5.58% | 51.9% | 46/825 |
-| Free | 3.64% | — | 30/825 |
 
 ### Zero-OOV Test Filtering
 
@@ -209,32 +226,11 @@ This produces `data/test_zero_oov.jsonl` (~1,066 articles, ~5,326 evaluable reda
 
 **Why this framing**: measures engrammatic recall — can the model recover entities it was trained on from context? This is the cleanest signal for the hallucination-probe thesis.
 
-## Current Phase: OOV Elimination (ongoing)
+## Current Phase: Accuracy Improvement
 
-**Goal**: Achieve 0% OOV on test set to unlock model capacity and reach 20%+ constrained accuracy before publishing. OOV is currently 37% (down from 67%) — further corpus expansion needed.
+**Goal**: Reach 20%+ constrained accuracy before publishing. The zero-OOV test set (`data/test_zero_oov.jsonl`) is built — evaluation now measures engrammatic recall directly. Best constrained result to date: 7.16% (April 22, 4,299-article corpus).
 
-**Strategy**:
-1. Run `scripts/fetch_oov_entities.py` to append Wikipedia articles for remaining OOV entities directly to `data/wwi_extended.jsonl`
-2. Re-run the full pipeline (combine → split → redact → curate → train → eval)
-3. Use corpus index to verify entity coverage before retraining
-
-```bash
-# Fetch missing entity articles
-uv run python scripts/fetch_oov_entities.py \
-    --train data/train_redacted_curated.jsonl \
-    --test data/test_redacted_curated.jsonl \
-    --output data/wwi_extended.jsonl
-
-# Full pipeline (or use run_pipeline.sh)
-uv run python scripts/combiner.py
-uv run python scripts/splitter.py
-uv run python scripts/redactor.py --input data/train_clean.jsonl --output data/train_redacted.jsonl --mode train
-uv run python scripts/redactor.py --input data/test_clean.jsonl --output data/test_redacted.jsonl --mode test
-uv run python src/ner_recovery/curator.py --input data/train_redacted.jsonl --output data/train_redacted_curated.jsonl
-uv run python src/ner_recovery/curator.py --input data/test_redacted.jsonl --output data/test_redacted_curated.jsonl
-uv run train --epochs 7 --output-dir models/zero_oov
-uv run evaluate --model-dir models/zero_oov/final --data data/test_redacted_curated.jsonl --train data/train_redacted_curated.jsonl
-```
+**Next lever**: More training data / more epochs. OOV elimination via corpus expansion is the prior strategy; `scripts/fetch_oov_entities.py` appends articles directly to `wwi_extended.jsonl` if re-running that phase.
 
 See `notes/2026-04-22_next_steps.md` for detailed breakdown.
 
@@ -281,10 +277,12 @@ Offsets are character positions in the redacted text. Redaction sampling seeded 
 ### Package Structure
 
 `src/ner_recovery/` — installable package:
-- `train.py` — DistilBERT MLM fine-tuning with batched windowed inputs
-- `eval.py` — free and constrained evaluation
+- `train.py` — DistilBERT MLM fine-tuning with batched windowed inputs (`uv run train`)
+- `eval.py` — free and constrained evaluation (`uv run evaluate`)
 - `curator.py` — multi-pass noise filter; keeps only PERSON, ORG, GPE, EVENT, LOC, FAC, NORP
 - `oov_analysis.py` — identifies test entities absent from training candidates
+
+`pyproject.toml` also exposes `uv run build-corpus` (`ner_recovery.corpus:main`) for XML dump processing.
 
 ### Corpus Loader Spec
 
@@ -308,7 +306,7 @@ Tests live in `tests/` and cover masking logic, janitor, redactor, and splitter.
 
 ### Running a Full Pipeline
 
-Use `run_pipeline.sh` for a one-command run (combines, splits, redacts, curates, trains at 9 epochs, evaluates):
+Use `run_pipeline.sh` for a one-command run (combines, splits, redacts, curates, trains at 7 epochs, filters zero-OOV, evaluates):
 
 ```bash
 bash run_pipeline.sh

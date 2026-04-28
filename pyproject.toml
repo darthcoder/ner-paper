@@ -12,6 +12,7 @@ dependencies = [
     "wikipedia-api>=0.6",
     "tqdm>=4.66",
     "mwparserfromhell>=0.6",
+    "anthropic>=0.40",
 ]
 
 [project.scripts]
