@@ -48,15 +48,25 @@ def count_redactions(text: str) -> int:
 
 
 def parse_predictions(raw: str, n_expected: int) -> list[str]:
-    raw = re.sub(r"^```(?:json)?\s*", "", raw.strip())
-    raw = re.sub(r"\s*```$", "", raw)
+    cleaned = re.sub(r"^```(?:json)?\s*", "", raw.strip())
+    cleaned = re.sub(r"\s*```$", "", cleaned)
     try:
-        preds = json.loads(raw).get("predictions", [])
+        preds = json.loads(cleaned).get("predictions", [])
+        if len(preds) < n_expected:
+            preds.extend([""] * (n_expected - len(preds)))
+        return [str(p).strip() for p in preds[:n_expected]]
     except (json.JSONDecodeError, AttributeError):
-        preds = []
-    if len(preds) < n_expected:
-        preds.extend([""] * (n_expected - len(preds)))
-    return [str(p).strip() for p in preds[:n_expected]]
+        pass
+    match = re.search(r"\{[^{}]*\"predictions\"[^{}]*\[.*?\][^{}]*\}", raw, re.DOTALL)
+    if match:
+        try:
+            preds = json.loads(match.group()).get("predictions", [])
+            if len(preds) < n_expected:
+                preds.extend([""] * (n_expected - len(preds)))
+            return [str(p).strip() for p in preds[:n_expected]]
+        except (json.JSONDecodeError, AttributeError):
+            pass
+    return [""] * n_expected
 
 
 def load_records(data_path: Path) -> list[dict]:
