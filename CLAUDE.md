@@ -29,6 +29,23 @@ git lfs install
 git lfs pull
 ```
 
+### Prerequisites & Environment
+
+**GPU** (optional but recommended):
+- Training runs faster on GPU (NVIDIA/CUDA or Apple Silicon). CPU training (~1–2 epochs takes 30–60 min); GPU training is 5–10× faster.
+- No GPU required for evaluation or data pipeline.
+
+**API Keys** (for frontier model evaluation only):
+- Set `ANTHROPIC_API_KEY` in your shell environment for `scripts/eval_claude.py` and `scripts/benchmark.py`
+- Set `OPENAI_API_KEY` if evaluating against GPT models
+- These are not needed for DistilBERT training or local evaluation
+
+**Local Model Evaluation**:
+- LM Studio (https://lmstudio.ai) for OSS model topline. Start the server on `localhost:1234`, then use `scripts/eval_lmstudio.py`
+
+**Verify LFS after pulling**:
+- After `git lfs pull`, check that `.jsonl` files are real data, not pointer files. If you see `version https://git-lfs.github.com/spec/v1`, LFS didn't pull correctly. Run `git lfs pull` again or reinstall LFS via `git lfs install`
+
 ## Data Pipeline
 
 Runs in sequential stages. The main working corpus is `wwi_extended.jsonl` (3,230 articles). The pipeline produces intermediate files at each stage (documented below).
@@ -239,11 +256,50 @@ This produces `data/test_zero_oov.jsonl` (~1,066 articles, ~5,326 evaluable reda
 
 ## Current Phase: Accuracy Improvement
 
-**Goal**: Reach 20%+ constrained accuracy before publishing. The zero-OOV test set (`data/test_zero_oov.jsonl`) is built — evaluation now measures engrammatic recall directly. Best constrained result to date: 7.16% (April 22, 4,299-article corpus).
+**Goal**: Reach 20%+ constrained accuracy before publishing. The zero-OOV test set (`data/test_zero_oov.jsonl`) is built — evaluation now measures engrammatic recall directly. Best constrained result to date: 6.61% (April 24, 6,575-article corpus, 9 epochs).
 
 **Next lever**: More training data / more epochs. OOV elimination via corpus expansion is the prior strategy; `scripts/fetch_oov_entities.py` appends articles directly to `wwi_extended.jsonl` if re-running that phase.
 
 See `notes/2026-04-22_next_steps.md` for detailed breakdown.
+
+### Typical Development Workflow
+
+When iterating on model accuracy:
+
+1. **Identify bottleneck** (OOV analysis):
+   ```bash
+   uv run python src/ner_recovery/oov_analysis.py --train data/train_redacted_curated.jsonl --test data/test_redacted_curated.jsonl --corpus data/wwi_extended.jsonl
+   ```
+   - If OOV > 50%: corpus coverage is limiting; expand with `fetch_oov_entities.py`
+   - If OOV < 30%: model learning is the bottleneck; try more epochs or different hyperparameters
+
+2. **Expand corpus** (if OOV-limited):
+   ```bash
+   uv run python scripts/fetch_oov_entities.py --train data/train_redacted_curated.jsonl --test data/test_redacted_curated.jsonl --output data/wwi_extended.jsonl
+   ```
+
+3. **Rebuild pipeline** (combine, split, redact, curate):
+   ```bash
+   bash run_pipeline.sh
+   ```
+   Or step by step as shown in "Common Development Tasks" → "Running a Full Pipeline"
+
+4. **Train with new data**:
+   ```bash
+   uv run train --epochs 7 --output-dir models/iteration_N
+   ```
+
+5. **Evaluate** (both constrained and free):
+   ```bash
+   uv run evaluate --model-dir models/iteration_N/final --data data/test_zero_oov.jsonl --train data/train_redacted_curated.jsonl
+   uv run evaluate --model-dir models/iteration_N/final --data data/test_zero_oov.jsonl --train data/train_redacted_curated.jsonl --mode free
+   ```
+
+6. **Compare to baseline**:
+   ```bash
+   uv run python scripts/benchmark_table.py --latest
+   ```
+   Compare your new model to previous runs
 
 ## Corpus Index
 
@@ -299,11 +355,23 @@ Offsets are character positions in the redacted text. Redaction sampling seeded 
 
 The corpus loader (`featherweight-corpus-load.md`) specifies:
 - Use the `mediawiki` package (not `mwparserfromhell`) for XML dump processing
+  - **Note**: `pyproject.toml` currently lists `mwparserfromhell` as a dependency; prefer `mediawiki` for new XML processing scripts
 - Token count via whitespace split only (`len(text.split())`)
 - Filter articles: 500–5000 tokens
 - doc_id format: `"wikipedia_" + slugified_title` (lowercase, underscores)
-- Use `polars` (not `pandas`)
+- **Use `polars` (not `pandas`)** — the package is built around `polars` for streaming performance and memory efficiency
 - Generator-based (lazy evaluation, one article at a time)
+
+### Data File Quick Reference
+
+| Filename | Contents | Use Case |
+|----------|----------|----------|
+| `wwi_extended.jsonl` | Raw corpus: `{pageid, title, wikitext}` | Starting point for data pipeline; corpus expansion target |
+| `wwi_extended_clean.jsonl` | Cleaned corpus: `{pageid, title, text}` | After running janitor; input to combiner |
+| `train_redacted.jsonl` | Training set with redactions: `{pageid, title, text, redactions: [...]}` | Before curation; still contains noise |
+| `train_redacted_curated.jsonl` | **Recommended for training**: cleaned, filtered redactions | Input to `uv run train` |
+| `test_redacted_curated.jsonl` | Test set after curation; includes OOV entities | Evaluation with `uv run evaluate --data ...` |
+| `test_zero_oov.jsonl` | **Cleanest signal**: OOV redactions stripped | Primary eval target; measures engrammatic recall only |
 
 ## Tests
 
@@ -381,6 +449,31 @@ uv run evaluate --model-dir models/current/final --data data/test_redacted_curat
 - **Low accuracy on curated data**: Check OOV %. If OOV > 50%, expand corpus first.
 - **OOV entities missing from corpus**: Use corpus index to search (`ignore/wikipedia-institutional-fetishism/analysis/corpus_index.py query ENTITY`).
 - **Evaluation crashes**: Ensure `--train` file uses same label set as model was trained on. Curator may have filtered labels.
+
+### Troubleshooting
+
+**Git LFS files are pointer files, not data**:
+- Symptom: `.jsonl` files are ~100 bytes with `version https://git-lfs.github.com/spec/v1`
+- Fix: `git lfs install && git lfs pull`
+- Verify: `file data/wwi_extended.jsonl` should show binary data, not text
+
+**spaCy model not found ("can't find model 'en_core_web_sm'")**:
+- Fix: `uv run python -m spacy download en_core_web_sm`
+- Note: This downloads the model globally, not into `.venv`; rerun only if missing
+
+**Missing API keys for frontier model evaluation**:
+- `scripts/eval_claude.py` requires `ANTHROPIC_API_KEY` in your shell environment
+- Set: `export ANTHROPIC_API_KEY=<your-key>` before running eval scripts
+- Check: `echo $ANTHROPIC_API_KEY` — should be non-empty
+
+**CUDA out-of-memory during training**:
+- Reduce `BATCH_SIZE` in `src/ner_recovery/train.py` (default: 8)
+- Or reduce `MAX_LENGTH` (default: 512, input token window per sample)
+- Run on CPU as fallback: `CUDA_VISIBLE_DEVICES="" uv run train --epochs 7` (slower, but works)
+
+**Evaluation crashes with "label not in training candidates"**:
+- Cause: `--train` file (used to build candidate list) has different entity labels than evaluation data
+- Fix: Ensure both `--train` and `--data` files are from the same pipeline run (same curator version)
 
 ## Key Constraints
 

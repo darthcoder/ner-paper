@@ -30,15 +30,16 @@ The trick: by telling the model "this is definitely a person's name, not a count
 
 ### Current Status (April 2026)
 
-**Frontier model topline** (April 28, zero-OOV test set, 316 redactions):
+**Latest Results** (April 29, zero-OOV test set, 5,326 redactions):
 
-| Model | Overall | NORP | GPE | EVENT | PERSON | ORG | LOC |
-|---|---|---|---|---|---|---|---|
-| Claude Sonnet 4.6 | **56.3%** | 79.5% | 57.7% | 58.1% | 56.8% | 34.7% | 14.3% |
-| Claude Haiku 4.5 | **44.0%** | 68.0% | 52.6% | 35.5% | 29.5% | 25.3% | 14.3% |
-| DistilBERT (fine-tuned, constrained) | **6.6%** | 12.7% | — | 10.3% | — | — | — |
+| Model | Overall | NORP | EVENT | GPE | LOC | FAC | ORG | PERSON |
+|---|---|---|---|---|---|---|---|---|
+| Claude Sonnet 4.6 | **56.3%** | 79.5% | 58.1% | 57.7% | 14.3% | — | 34.7% | 56.8% |
+| Claude Haiku 4.5 | **44.0%** | 68.0% | 35.5% | 52.6% | 14.3% | — | 25.3% | 29.5% |
+| DistilBERT (6,575 articles, 7 epochs, constrained) | **9.97%** | 13.21% | 13.79% | 9.29% | 10.88% | 8.51% | 8.13% | 7.83% |
+| DistilBERT (4,299 articles, baseline) | **6.6%** | 12.7% | 10.3% | — | — | — | — | — |
 
-The frontier–fine-tuned gap (44–56% vs 6.6%) is the paper's core finding: DistilBERT recovers roughly 12–15% of what a frontier model can infer from the same context, with no pretraining advantage. Claude Opus results pending.
+The frontier–fine-tuned gap (44–56% vs ~10%) shows frontier models recover roughly 8–11× more entity context than fine-tuned DistilBERT despite the same training data. Expanding corpus and optimizing hyperparameters in progress. Claude Opus and OSS model toplines pending.
 
 **Zero-OOV evaluation**: `data/test_zero_oov.jsonl` strips OOV redactions so every scored entity appears in the training candidate set — the cleanest signal for the hallucination-probe thesis. This is now the primary evaluation target.
 
