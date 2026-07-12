@@ -20,3 +20,6 @@ ignore/
 .env*
 .env
 .env.bak
+
+# Tokenization cache (train.py, rebuilt from source jsonl)
+data/cache/

@@ -12,6 +12,7 @@ dependencies = [
     "wikipedia-api>=0.6",
     "tqdm>=4.66",
     "mwparserfromhell>=0.6",
+    "mwxml>=0.3",
     "anthropic>=0.40",
     "openai>=1.30",
 ]

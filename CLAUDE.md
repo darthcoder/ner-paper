@@ -349,7 +349,13 @@ Offsets are character positions in the redacted text. Redaction sampling seeded 
 - `curator.py` — multi-pass noise filter; keeps only PERSON, ORG, GPE, EVENT, LOC, FAC, NORP
 - `oov_analysis.py` — identifies test entities absent from training candidates
 
-`pyproject.toml` also exposes `uv run build-corpus` (`ner_recovery.corpus:main`) for XML dump processing.
+`pyproject.toml` also exposes `uv run build-corpus` (`ner_recovery.corpus:main`) — streams a full Wikipedia XML dump (`.xml`, `.xml.bz2`, or `.xml.gz`) and filters to 500–5000-token articles (namespace-0 only), writing `{pageid, doc_id, title, wikitext}` JSONL that feeds directly into `janitor.py`. Uses `mwxml` for dump parsing — **not** the `mediawiki` package named in `featherweight-corpus-load.md`'s spec, since `mediawiki` (pymediawiki) is an online API client with no dump-reading capability (`mediawiki.MediaWikiDump()` does not exist).
+
+```bash
+uv run build-corpus --dump enwiki-latest-pages-articles-multistream.xml.bz2 --output data/wikipedia_corpus.jsonl
+```
+
+This is a separate, complementary path to the category-tree crawlers in `scripts/fetch_wikipedia_portal.py` et al. — use this when you have (or want) a full dump rather than crawling the API by category.
 
 ### Corpus Loader Spec
 

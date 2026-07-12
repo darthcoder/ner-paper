@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
+import time
 from pathlib import Path
 
 import torch
@@ -25,6 +27,10 @@ BATCH_SIZE = 8
 EPOCHS = 3
 LR = 5e-5
 WARMUP_STEPS = 50
+
+# Bump when make_examples' output format changes (invalidates old caches).
+CACHE_VERSION = "v2-dynamic-padding"
+DEV_SPLIT_SEED = 42
 
 
 # ---------------------------------------------------------------------------
@@ -87,11 +93,9 @@ def make_examples(record: dict, tokenizer: DistilBertTokenizerFast) -> list[dict
             local_text,
             max_length=MAX_LENGTH,
             truncation=True,
-            padding="max_length",
-            return_tensors="pt",
         )
-        input_ids = enc["input_ids"][0].tolist()
-        attention_mask = enc["attention_mask"][0].tolist()
+        input_ids = enc["input_ids"]
+        attention_mask = enc["attention_mask"]
 
         # Fill labels at MASK positions in order of entities
         labels = [-100] * len(input_ids)
@@ -114,19 +118,68 @@ def make_examples(record: dict, tokenizer: DistilBertTokenizerFast) -> list[dict
     return examples
 
 
+def _cache_path(data_path: Path, subsample: float) -> Path:
+    suffix = "" if subsample >= 1.0 else f"_sub{subsample:g}"
+    return data_path.parent / "cache" / f"{data_path.stem}{suffix}.pt"
+
+
 class RedactionDataset(Dataset):
-    def __init__(self, path: Path, tokenizer: DistilBertTokenizerFast) -> None:
-        self.examples: list[dict] = []
+    def __init__(
+        self,
+        path: Path,
+        tokenizer: DistilBertTokenizerFast,
+        rebuild_cache: bool = False,
+        subsample: float = 1.0,
+    ) -> None:
+        cache_path = _cache_path(path, subsample)
+
+        if not rebuild_cache and cache_path.exists() and cache_path.stat().st_mtime >= path.stat().st_mtime:
+            t0 = time.time()
+            cached = torch.load(cache_path, weights_only=False)
+            if cached.get("version") == CACHE_VERSION:
+                self.examples: list[dict] = cached["examples"]
+                print(f"  Cache hit: {len(self.examples)} examples from {cache_path} ({time.time() - t0:.1f}s)")
+                return
+            print(f"  Cache at {cache_path} is stale (version mismatch); rebuilding")
+
+        t0 = time.time()
+        rng = random.Random(DEV_SPLIT_SEED)
+        self.examples = []
         with open(path) as f:
             for line in f:
+                if subsample < 1.0 and rng.random() > subsample:
+                    continue
                 record = json.loads(line)
                 self.examples.extend(make_examples(record, tokenizer))
+        print(f"  Built {len(self.examples)} examples from {path} ({time.time() - t0:.1f}s)")
+
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save({"version": CACHE_VERSION, "examples": self.examples}, cache_path)
+        print(f"  Cached → {cache_path}")
 
     def __len__(self) -> int:
         return len(self.examples)
 
-    def __getitem__(self, idx: int) -> dict[str, torch.Tensor]:
-        return {k: torch.tensor(v) for k, v in self.examples[idx].items()}
+    def __getitem__(self, idx: int) -> dict[str, list[int]]:
+        return self.examples[idx]
+
+
+def collate_fn(batch: list[dict[str, list[int]]], pad_token_id: int) -> dict[str, torch.Tensor]:
+    """Pad each batch to its own longest sequence instead of a fixed MAX_LENGTH."""
+    max_len = max(len(item["input_ids"]) for item in batch)
+
+    input_ids, attention_mask, labels = [], [], []
+    for item in batch:
+        pad_len = max_len - len(item["input_ids"])
+        input_ids.append(item["input_ids"] + [pad_token_id] * pad_len)
+        attention_mask.append(item["attention_mask"] + [0] * pad_len)
+        labels.append(item["labels"] + [-100] * pad_len)
+
+    return {
+        "input_ids": torch.tensor(input_ids),
+        "attention_mask": torch.tensor(attention_mask),
+        "labels": torch.tensor(labels),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -146,10 +199,20 @@ def train(args: argparse.Namespace) -> None:
     model.to(device)
 
     print("Building dataset...")
-    dataset = RedactionDataset(args.data, tokenizer)
+    dataset = RedactionDataset(
+        args.data,
+        tokenizer,
+        rebuild_cache=args.rebuild_cache,
+        subsample=args.subsample,
+    )
     print(f"  {len(dataset)} training examples from {args.data}")
 
-    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
+    loader = DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        collate_fn=lambda batch: collate_fn(batch, tokenizer.pad_token_id),
+    )
 
     optimizer = AdamW(model.parameters(), lr=args.lr)
     total_steps = len(loader) * args.epochs
@@ -170,7 +233,11 @@ def train(args: argparse.Namespace) -> None:
 
         for batch in tqdm(loader, desc=f"Epoch {epoch}/{args.epochs}"):
             batch = {k: v.to(device) for k, v in batch.items()}
-            loss = model(**batch).loss
+            if device.type == "mps":
+                with torch.autocast(device_type="mps", dtype=torch.float16):
+                    loss = model(**batch).loss
+            else:
+                loss = model(**batch).loss
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
@@ -215,6 +282,15 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=EPOCHS)
     parser.add_argument("--lr", type=float, default=LR)
     parser.add_argument("--warmup", type=int, default=WARMUP_STEPS)
+    parser.add_argument(
+        "--rebuild-cache", action="store_true",
+        help="Force re-tokenization even if a fresh cache exists at data/cache/<name>.pt",
+    )
+    parser.add_argument(
+        "--subsample", type=float, default=1.0,
+        help="Fraction of records to use (seeded, for fast dev iteration). "
+             "Prefer scripts/make_dev_subsample.py for a materialized dev split.",
+    )
     train(parser.parse_args())
 
 

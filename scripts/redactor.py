@@ -10,6 +10,7 @@ import random
 from pathlib import Path
 
 import spacy
+from tqdm import tqdm
 
 def mask(label: str) -> str:
     return f"[REDACTED:{label}]"
@@ -107,8 +108,10 @@ def main() -> None:
     written = 0
     total_redactions = 0
 
+    n_lines = sum(1 for _ in args.input.open())
+
     with args.input.open() as fin, args.output.open("w") as fout:
-        for line in fin:
+        for line in tqdm(fin, total=n_lines, desc=f"[{args.mode}] Redacting"):
             record = json.loads(line)
             redacted_text, redactions = redact(record["text"], args.mode, rng)
             fout.write(json.dumps({
