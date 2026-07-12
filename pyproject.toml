@@ -9,6 +9,7 @@ dependencies = [
     "datasets>=2.19",
     "tokenizers>=0.19",
     "spacy>=3.7",
+    "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
     "wikipedia-api>=0.6",
     "tqdm>=4.66",
     "mwparserfromhell>=0.6",
@@ -31,3 +32,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ner_recovery"]
+
+[tool.hatch.metadata]
+allow-direct-references = true

@@ -16,11 +16,7 @@ Uses `uv` and Python 3.11 (see `.python-version`). Install dependencies:
 uv sync
 ```
 
-For spaCy NER (required by `scripts/redactor.py`):
-
-```bash
-uv run python -m spacy download en_core_web_sm
-```
+This also installs `en_core_web_sm` (spaCy NER model, required by `scripts/redactor.py`) — it's pinned directly in `pyproject.toml` as a wheel-URL dependency specifically so `uv sync` doesn't prune it. Don't install it via `python -m spacy download` instead; a model installed that way isn't tracked in `uv.lock` and gets silently uninstalled the next time `uv sync` runs.
 
 Git LFS is required — `.jsonl` and `.json` files are LFS-tracked. Install and pull:
 
@@ -464,8 +460,8 @@ uv run evaluate --model-dir models/current/final --data data/test_redacted_curat
 - Verify: `file data/wwi_extended.jsonl` should show binary data, not text
 
 **spaCy model not found ("can't find model 'en_core_web_sm'")**:
-- Fix: `uv run python -m spacy download en_core_web_sm`
-- Note: This downloads the model globally, not into `.venv`; rerun only if missing
+- Fix: `uv sync` — the model is a pinned dependency in `pyproject.toml`, so a plain sync reinstalls it
+- If it keeps disappearing after `uv sync`: something re-added it via `python -m spacy download` outside the lockfile at some point, which `uv sync` then prunes. Don't use `spacy download` — keep it declared in `pyproject.toml`'s `dependencies` instead
 
 **Missing API keys for frontier model evaluation**:
 - `scripts/eval_claude.py` requires `ANTHROPIC_API_KEY` in your shell environment
